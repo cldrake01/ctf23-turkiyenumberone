@@ -59,8 +59,7 @@ public abstract class Team {
         flag.putSelfInGrid(grid, adjustForSide(DEFAULT_FLAG_LOCATION, grid));
         resetTeam();
         for (Player player : players) {
-            double dist = Math.sqrt(Math.pow(player.getStartLocation().getRow() - DEFAULT_FLAG_LOCATION.getRow(), 2)
-                    + Math.pow(player.getStartLocation().getCol() - DEFAULT_FLAG_LOCATION.getCol(), 2));
+            double dist = Math.sqrt(Math.pow(player.getStartLocation().getRow() - DEFAULT_FLAG_LOCATION.getRow(), 2) + Math.pow(player.getStartLocation().getCol() - DEFAULT_FLAG_LOCATION.getCol(), 2));
             if (player.getStartLocation().getCol() >= grid.getNumCols() / 2 || player.getStartLocation().getCol() < 0 || dist < 10.0) {
                 System.err.println("Someone has cheated and given their players an invalid start location");
                 Location nextLoc;
@@ -86,8 +85,7 @@ public abstract class Team {
     }
 
     public void displayStats(int steps) {
-        System.out.println(name + " got " + pickUps + " pick ups and " + tags + " tags. They made " + offensiveMoves
-                + " steps on the offencive side, and were on the other side " + offensiveMoves / (steps + players.size()) + "% of the game");
+        System.out.println(name + " got " + pickUps + " pick ups and " + tags + " tags. They made " + offensiveMoves + " steps on the offencive side, and were on the other side " + offensiveMoves / (steps + players.size()) + "% of the game");
     }
 
     protected final void addScore(int s) {
@@ -114,11 +112,12 @@ public abstract class Team {
     }
 
     final static int RANGE = 4;
+
     public final boolean nearFlag(Location loc) {
         if (flag == null || flag.getLocation() == null) return false;
         Location fLoc = flag.getLocation();
 
-        return Math.abs(loc.getRow()-fLoc.getRow()) <= RANGE && Math.abs(loc.getCol()-fLoc.getCol()) <= RANGE;
+        return Math.abs(loc.getRow() - fLoc.getRow()) <= RANGE && Math.abs(loc.getCol() - fLoc.getCol()) <= RANGE;
         //return Math.sqrt(Math.pow(loc.getRow() - flag.getLocation().getRow(), 2) + Math.pow(loc.getCol() - flag.getLocation().getCol(), 2)) <= 4;
     }
 

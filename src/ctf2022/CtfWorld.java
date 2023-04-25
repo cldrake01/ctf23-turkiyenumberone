@@ -40,7 +40,7 @@ public class CtfWorld extends ActorWorld {
                 teamB.setHasWon();
             }
             announceScores();
-        } else if (steps < MAX_GAME_LENGTH){
+        } else if (steps < MAX_GAME_LENGTH) {
             Collections.shuffle(players);
             for (Player p : players) {
                 p.act();
@@ -60,8 +60,7 @@ public class CtfWorld extends ActorWorld {
         if (teamA.getSide() == 0) {
             scoreAnnouncement += teamA.getName() + ": " + teamA.getScore();
             scoreAnnouncement += "   \t" + teamB.getName() + ": " + teamB.getScore();
-        }
-        else {
+        } else {
             scoreAnnouncement += teamB.getName() + ": " + teamB.getScore();
             scoreAnnouncement += "   \t" + teamA.getName() + ": " + teamA.getScore();
         }
@@ -85,6 +84,8 @@ public class CtfWorld extends ActorWorld {
         return steps;
     }
 
-    public boolean locationClicked(Location loc) { return true; }
+    public boolean locationClicked(Location loc) {
+        return true;
+    }
 
 }

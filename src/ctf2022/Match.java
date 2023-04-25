@@ -63,9 +63,9 @@ public class Match {
             msg = teamB.getName() + " vs. " + teamA.getName();
         }
         final JOptionPane pane = new JOptionPane(msg);
-        final JDialog d = pane.createDialog((JFrame)null, "Next Match");
+        final JDialog d = pane.createDialog((JFrame) null, "Next Match");
         System.out.println();
-        d.setLocation((int)d.getLocation().getX(),Math.max(0, (int)d.getLocation().getY()-300));
+        d.setLocation((int) d.getLocation().getX(), Math.max(0, (int) d.getLocation().getY() - 300));
         d.setVisible(true);
         System.out.println("Starting Match: " + teamA.getName() + " vs. " + teamB.getName());
 
@@ -98,8 +98,7 @@ public class Match {
 
     private boolean nearPlayer(Team t, Location loc) {
         for (Player p : t.getPlayers()) {
-            if (distance(p.getLocation(), loc) < 3)
-                return true;
+            if (distance(p.getLocation(), loc) < 3) return true;
         }
         return false;
     }

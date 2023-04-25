@@ -24,8 +24,7 @@ public class Flag extends Actor {
 
     public final void removeSelfFromGrid() {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
-        if (callingClass.endsWith("CtfWorld"))
-            super.removeSelfFromGrid();
+        if (callingClass.endsWith("CtfWorld")) super.removeSelfFromGrid();
         else {
             System.err.println("Someone has cheated and tried to remove a player from the grid");
             CtfWorld.extra += " Cheat";
@@ -37,8 +36,7 @@ public class Flag extends Actor {
     }
 
     public Location getLocation() {
-        if (getGrid() == null && carrier != null)
-            return carrier.getLocation();
+        if (getGrid() == null && carrier != null) return carrier.getLocation();
         return new Location(super.getLocation().getRow(), super.getLocation().getCol());
     }
 

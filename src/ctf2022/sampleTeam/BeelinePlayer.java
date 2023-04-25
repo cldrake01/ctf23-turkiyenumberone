@@ -6,16 +6,16 @@ import info.gridworld.grid.Location;
 
 public class BeelinePlayer extends Player {
 
-	public BeelinePlayer(Location startLocation) {
-		super(startLocation);
-	}
+    public BeelinePlayer(Location startLocation) {
+        super(startLocation);
+    }
 
-	public Location getMoveLocation() {
-		int dir;
-		if (this.hasFlag()) {
-			return this.getMyTeam().getFlag().getLocation();
-		} else {
-			return getOtherTeam().getFlag().getLocation();
-		}
-	}
+    public Location getMoveLocation() {
+        int dir;
+        if (this.hasFlag()) {
+            return this.getMyTeam().getFlag().getLocation();
+        } else {
+            return getOtherTeam().getFlag().getLocation();
+        }
+    }
 }
