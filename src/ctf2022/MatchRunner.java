@@ -5,7 +5,6 @@ import ctf2022.sampleTeam.SampleTeam;
 import java.awt.*;
 
 public class MatchRunner {
-
     public static void main(String[] args) {
 
         Team a = new SampleTeam("Red Team", Color.RED);

@@ -5,8 +5,12 @@ import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static java.lang.System.arraycopy;
 
 public abstract class Player extends Actor {
 
@@ -89,16 +93,14 @@ public abstract class Player extends Actor {
                         Thread.sleep(2);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-
                     }
                 }
                 if (getMoveLocationThread.isAlive()) {
-                    getMoveLocationThread.stop();
+                    getMoveLocationThread.interrupt();
                     System.out.println("Player ran out of time: " + this);
                     CtfWorld.extra += " Time";
                 }
-
-                makeMove(!this.getGrid().isValid(loc) ? null : loc); // null = don't move
+                makeMove(this.getGrid().isValid(loc) ? loc : null); // null = don't move
             }
         } catch (Exception e) {
             CtfWorld.extra += " Err";
@@ -107,27 +109,36 @@ public abstract class Player extends Actor {
         }
     }
 
-    private final void processNeighbors() {
-        List<Location> neighborLocations = getGrid().getOccupiedAdjacentLocations(getLocation());
-        for (int i = neighborLocations.size() - 1; i >= 0; i--) {
-            Actor neighbor = getGrid().get(neighborLocations.get(i));
-            if (!(neighbor instanceof Player) || ((Player) neighbor).team.equals(team)) {
-                neighborLocations.remove(i);
-                if (neighbor instanceof Flag && !((Flag) neighbor).getTeam().equals(team)) {
-                    hasFlag = true;
-                    setColor(Color.YELLOW);
-                    team.getOpposingTeam().getFlag().pickUp(this);
-                    team.addScore(CAPTURE);
-                    team.addPickUp();
-                }
+    private void search(Location loc, List<Location> ring) {
+        Actor neighbor = getGrid().get(loc);
+        if (!(neighbor instanceof Player) || ((Player) neighbor).team.equals(team)) {
+            ring.remove(loc);
+            if (neighbor instanceof Flag && !((Flag) neighbor).getTeam().equals(team)) {
+                hasFlag = true;
+                setColor(Color.YELLOW);
+                team.getOpposingTeam().getFlag().pickUp(this);
+                team.addScore(CAPTURE);
+                team.addPickUp();
             }
         }
+    }
+
+    private void processNeighbors() {
+        List<Location> ring = getGrid().getOccupiedAdjacentLocations(getLocation());
+        for (Location loc : new ArrayList<>(ring)) {
+            ring.addAll(new ArrayList<>(getGrid().getOccupiedAdjacentLocations(loc)));
+            search(loc, new ArrayList<>(ring));
+//            List<Location> ringTwo = new ArrayList<>(getGrid().getOccupiedAdjacentLocations(loc));
+//            for (Location secondLoc : ringTwo) {
+//                search(secondLoc, new ArrayList<>(ringTwo));
+//            }
+        }
         if (team.onSide(getLocation())) {
-            Collections.shuffle(neighborLocations);
-            for (Location neighborLocation : neighborLocations) {
-                if (team.onSide(neighborLocation)) {
+            Collections.shuffle(ring);
+            for (Location neighborLocation : ring) {
+                if (team.onSide(neighborLocation) && getGrid().get(neighborLocation) instanceof Player) {
                     Actor neighbor = getGrid().get(neighborLocation);
-                    if (((Player) neighbor).hasFlag() || Math.random() < (1. / neighborLocations.size())) {
+                    if (((Player) neighbor).hasFlag() || Math.random() < (1. / ring.size())) {
                         ((Player) neighbor).tag();
                         team.addScore(TAG);
                         team.addTag();
@@ -137,7 +148,7 @@ public abstract class Player extends Actor {
         }
     }
 
-    private final void makeMove(Location loc) {
+    private void makeMove(Location loc) {
         // if null, treat as if you are staying in same location
         if (loc == null) {
             loc = getLocation();
@@ -168,11 +179,10 @@ public abstract class Player extends Actor {
                 team.addScore(CARRY);
             }
         }
-
     }
 
     // get bounce-to location to move a player away from own flag
-    private final Location bounce() {
+    private Location bounce() {
         // preferred option - move directly away from flag until no longer too close
         int inc = Math.random() < .5 ? 10 : -10;
 
@@ -187,7 +197,7 @@ public abstract class Player extends Actor {
 
     public abstract Location getMoveLocation();
 
-    private final void tag() {
+    private void tag() {
         Location oldLoc = getLocation();
         Location nextLoc;
         do {
