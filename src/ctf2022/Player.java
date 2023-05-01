@@ -6,7 +6,6 @@ import info.gridworld.grid.Location;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -126,12 +125,12 @@ public abstract class Player extends Actor {
     private void processNeighbors() {
         List<Location> ring = getGrid().getOccupiedAdjacentLocations(getLocation());
         for (Location loc : new ArrayList<>(ring)) {
-            ring.addAll(new ArrayList<>(getGrid().getOccupiedAdjacentLocations(loc)));
-            search(loc, new ArrayList<>(ring));
+            ring.addAll(new ArrayList<>(getGrid().getValidAdjacentLocations(loc)));
 //            List<Location> ringTwo = new ArrayList<>(getGrid().getOccupiedAdjacentLocations(loc));
 //            for (Location secondLoc : ringTwo) {
 //                search(secondLoc, new ArrayList<>(ringTwo));
 //            }
+            search(loc, new ArrayList<>(ring));
         }
         if (team.onSide(getLocation())) {
             Collections.shuffle(ring);
