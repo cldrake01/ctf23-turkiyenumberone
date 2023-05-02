@@ -141,9 +141,7 @@ public abstract class Player extends Actor {
 
     private final void makeMove(Location loc) {
         // if null, treat as if you are staying in same location
-        if (loc == null) {
-            loc = getLocation();
-        }
+        if (loc == null) loc = getLocation();
 
         // limit to one step towards desired location
         if (!loc.equals(getLocation())) loc = getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc));
@@ -166,11 +164,8 @@ public abstract class Player extends Actor {
             if (team.onSide(getLocation())) team.addScore(MOVE);
             else team.addScore(MOVE_ON_OPPONENT_SIDE);
             team.addOffensiveMove();
-            if (this.hasFlag) {
-                team.addScore(CARRY);
-            }
+            if (this.hasFlag) team.addScore(CARRY);
         }
-
     }
 
     // get bounce-to location to move a player away from own flag
@@ -189,7 +184,7 @@ public abstract class Player extends Actor {
 
     public Location intruderSearch() {
         for (Location loc : getGrid().getOccupiedLocations())
-            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && loc.getCol() < getMyTeam().getSide() + getGrid().getNumCols() / 2)
+            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && loc.getCol() < (getMyTeam().getSide() == 0 ? getGrid().getNumCols() / 2 : getGrid().getNumCols()) && loc.getCol() > (getMyTeam().getSide() == 0 ? 0 : getGrid().getNumCols() / 2))
                 return loc;
         return null;
     }
@@ -206,26 +201,26 @@ public abstract class Player extends Actor {
     }
 
     public Location searchSurroundings() {
-        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation())) {
-            if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
-        }
+        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
+            if (getImediateObjectiveLocation(loc) != null)
+                return getImediateObjectiveLocation(loc);
         return null; // the reason we return null is to allow for class specific behavior, which may follow a call to this method.
     }
 
     public Location recursiveSearchSurroundings() {
         List<Location> locs = getGrid().getOccupiedAdjacentLocations(getLocation());
-        for (Location loc : new ArrayList<>(locs)) {
-            if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
+        for (Location loc : new ArrayList<>(locs))
+            if (getImediateObjectiveLocation(loc) != null)
+                return getImediateObjectiveLocation(loc);
             else locs.addAll(getGrid().getValidAdjacentLocations(loc));
-        }
         return locs.size() < 63 ? recursiveSearchSurroundings(new ArrayList<>(locs)) : null;
     }
 
     public Location recursiveSearchSurroundings(List<Location> locs) {
-        for (Location loc : new ArrayList<>(locs)) {
-            if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
+        for (Location loc : new ArrayList<>(locs))
+            if (getImediateObjectiveLocation(loc) != null)
+                return getImediateObjectiveLocation(loc);
             else locs.addAll(getGrid().getValidAdjacentLocations(loc));
-        }
         return locs.size() < 63 ? recursiveSearchSurroundings(new ArrayList<>(locs)) : null;
     }
 
@@ -234,9 +229,9 @@ public abstract class Player extends Actor {
     private void tag() {
         Location oldLoc = getLocation();
         Location nextLoc;
-        do {
+        do
             nextLoc = team.adjustForSide(new Location((int) (Math.random() * getGrid().getNumRows()), 0), getGrid());
-        } while (getGrid().get(nextLoc) != null);
+        while (getGrid().get(nextLoc) != null);
         moveTo(nextLoc);
         tagCoolDown = 10;
         if (hasFlag) {
