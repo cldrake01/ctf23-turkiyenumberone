@@ -1,15 +1,13 @@
 package ctf2022;
 
 import info.gridworld.actor.Actor;
+import info.gridworld.actor.Rock;
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static java.lang.System.arraycopy;
 
 public abstract class Player extends Actor {
 
@@ -92,6 +90,7 @@ public abstract class Player extends Actor {
                         Thread.sleep(2);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+
                     }
                 }
                 if (getMoveLocationThread.isAlive()) {
@@ -99,7 +98,8 @@ public abstract class Player extends Actor {
                     System.out.println("Player ran out of time: " + this);
                     CtfWorld.extra += " Time";
                 }
-                makeMove(this.getGrid().isValid(loc) ? loc : null); // null = don't move
+
+                makeMove(!this.getGrid().isValid(loc) ? null : loc); // null = don't move
             }
         } catch (Exception e) {
             CtfWorld.extra += " Err";
@@ -108,36 +108,27 @@ public abstract class Player extends Actor {
         }
     }
 
-    private void search(Location loc, List<Location> ring) {
-        Actor neighbor = getGrid().get(loc);
-        if (!(neighbor instanceof Player) || ((Player) neighbor).team.equals(team)) {
-            ring.remove(loc);
-            if (neighbor instanceof Flag && !((Flag) neighbor).getTeam().equals(team)) {
-                hasFlag = true;
-                setColor(Color.YELLOW);
-                team.getOpposingTeam().getFlag().pickUp(this);
-                team.addScore(CAPTURE);
-                team.addPickUp();
+    private final void processNeighbors() {
+        List<Location> neighborLocations = getGrid().getOccupiedAdjacentLocations(getLocation());
+        for (int i = neighborLocations.size() - 1; i >= 0; i--) {
+            Actor neighbor = getGrid().get(neighborLocations.get(i));
+            if (!(neighbor instanceof Player) || ((Player) neighbor).team.equals(team)) {
+                neighborLocations.remove(i);
+                if (neighbor instanceof Flag && !((Flag) neighbor).getTeam().equals(team)) {
+                    hasFlag = true;
+                    setColor(Color.YELLOW);
+                    team.getOpposingTeam().getFlag().pickUp(this);
+                    team.addScore(CAPTURE);
+                    team.addPickUp();
+                }
             }
         }
-    }
-
-    private void processNeighbors() {
-        List<Location> ring = getGrid().getOccupiedAdjacentLocations(getLocation());
-        for (Location loc : new ArrayList<>(ring)) {
-            ring.addAll(new ArrayList<>(getGrid().getValidAdjacentLocations(loc)));
-//            List<Location> ringTwo = new ArrayList<>(getGrid().getOccupiedAdjacentLocations(loc));
-//            for (Location secondLoc : ringTwo) {
-//                search(secondLoc, new ArrayList<>(ringTwo));
-//            }
-            search(loc, new ArrayList<>(ring));
-        }
         if (team.onSide(getLocation())) {
-            Collections.shuffle(ring);
-            for (Location neighborLocation : ring) {
-                if (team.onSide(neighborLocation) && getGrid().get(neighborLocation) instanceof Player) {
+            Collections.shuffle(neighborLocations);
+            for (Location neighborLocation : neighborLocations) {
+                if (team.onSide(neighborLocation)) {
                     Actor neighbor = getGrid().get(neighborLocation);
-                    if (((Player) neighbor).hasFlag() || Math.random() < (1. / ring.size())) {
+                    if (((Player) neighbor).hasFlag() || Math.random() < (1. / neighborLocations.size())) {
                         ((Player) neighbor).tag();
                         team.addScore(TAG);
                         team.addTag();
@@ -147,7 +138,7 @@ public abstract class Player extends Actor {
         }
     }
 
-    private void makeMove(Location loc) {
+    private final void makeMove(Location loc) {
         // if null, treat as if you are staying in same location
         if (loc == null) {
             loc = getLocation();
@@ -178,6 +169,7 @@ public abstract class Player extends Actor {
                 team.addScore(CARRY);
             }
         }
+
     }
 
     // get bounce-to location to move a player away from own flag
@@ -192,6 +184,31 @@ public abstract class Player extends Actor {
             if (getGrid().isValid(loc) && getGrid().get(loc) == null && team.onSide(loc)) return loc;
         }
         return getLocation();   // failed to find any valid location - rare!
+    }
+
+    public Location getImediateObjectiveLocation(Location loc) {
+        for (int i = getMyTeam().getSide(); i < (getMyTeam().getSide() == 0 ? loc.getCol() : getGrid().getNumCols() - 1 - loc.getCol()); i++) {
+            Location l = loc.getAdjacentLocation(i);
+            if (getGrid().isValid(l) && getGrid().get(l) == null) return l;
+        }
+
+        if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && ((Player) getGrid().get(loc)).getTeam().getSide() == getMyTeam().getSide())
+            return loc.getCol() >= getGrid().getNumCols() / 2.0 - 1 || loc.getCol() < getGrid().getNumCols() / 2.0 + 1 ? new Location(loc.getRow(), loc.getCol() + (getMyTeam().getSide() == 0 ? 1 : -1 )) : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+        else if (getGrid().get(loc) instanceof Rock)
+            return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+        else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
+            return loc;
+        else return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
+    }
+
+    public Location searchSurroundings() {
+        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation())) {
+            if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
+            for (Location locTwo : getGrid().getOccupiedAdjacentLocations(loc)) {
+                if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(locTwo);
+            }
+        }
+        return null; // the reason we return null is to allow for class specific behavior, which may follow a call to this method.
     }
 
     public abstract Location getMoveLocation();
