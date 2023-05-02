@@ -18,6 +18,6 @@ public class RandomPlayer extends Player {
         if (getMyTeam().getFlag().beingCarried())
             return getTeam().getFlag().getLocation();
         else
-            return searchSurroundings() != null ? searchSurroundings() : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+            return intruderSearch() != null ? intruderSearch() : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
     }
 }

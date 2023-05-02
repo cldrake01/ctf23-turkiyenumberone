@@ -6,6 +6,7 @@ import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -186,29 +187,46 @@ public abstract class Player extends Actor {
         return getLocation();   // failed to find any valid location - rare!
     }
 
-    public Location getImediateObjectiveLocation(Location loc) {
-        for (int i = getMyTeam().getSide(); i < (getMyTeam().getSide() == 0 ? loc.getCol() : getGrid().getNumCols() - 1 - loc.getCol()); i++) {
-            Location l = loc.getAdjacentLocation(i);
-            if (getGrid().isValid(l) && getGrid().get(l) == null) return l;
-        }
+    public Location intruderSearch() {
+        for (Location loc : getGrid().getOccupiedLocations())
+            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && loc.getCol() < getMyTeam().getSide() + getGrid().getNumCols() / 2)
+                return loc;
+        return null;
+    }
 
+    public Location getImediateObjectiveLocation(Location loc) {
         if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && ((Player) getGrid().get(loc)).getTeam().getSide() == getMyTeam().getSide())
-            return loc.getCol() >= getGrid().getNumCols() / 2.0 - 1 || loc.getCol() < getGrid().getNumCols() / 2.0 + 1 ? new Location(loc.getRow(), loc.getCol() + (getMyTeam().getSide() == 0 ? 1 : -1 )) : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+            return loc;
         else if (getGrid().get(loc) instanceof Rock)
             return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
             return loc;
-        else return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
+        else
+            return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
 
     public Location searchSurroundings() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation())) {
             if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
-            for (Location locTwo : getGrid().getOccupiedAdjacentLocations(loc)) {
-                if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(locTwo);
-            }
         }
         return null; // the reason we return null is to allow for class specific behavior, which may follow a call to this method.
+    }
+
+    public Location recursiveSearchSurroundings() {
+        List<Location> locs = getGrid().getOccupiedAdjacentLocations(getLocation());
+        for (Location loc : new ArrayList<>(locs)) {
+            if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
+            else locs.addAll(getGrid().getValidAdjacentLocations(loc));
+        }
+        return locs.size() < 63 ? recursiveSearchSurroundings(new ArrayList<>(locs)) : null;
+    }
+
+    public Location recursiveSearchSurroundings(List<Location> locs) {
+        for (Location loc : new ArrayList<>(locs)) {
+            if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
+            else locs.addAll(getGrid().getValidAdjacentLocations(loc));
+        }
+        return locs.size() < 63 ? recursiveSearchSurroundings(new ArrayList<>(locs)) : null;
     }
 
     public abstract Location getMoveLocation();
