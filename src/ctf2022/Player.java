@@ -203,23 +203,6 @@ public abstract class Player extends Actor {
         return null; // the reason we return null is to allow for class specific behavior, which may follow a call to this method.
     }
 
-    public Location recursiveSearchSurroundings() {
-        List<Location> locs = getGrid().getOccupiedAdjacentLocations(getLocation());
-        for (Location loc : new ArrayList<>(locs))
-            if (getImediateObjectiveLocation(loc) != null)
-                return getImediateObjectiveLocation(loc);
-            else locs.addAll(getGrid().getValidAdjacentLocations(loc));
-        return locs.size() < 63 ? recursiveSearchSurroundings(new ArrayList<>(locs)) : null;
-    }
-
-    public Location recursiveSearchSurroundings(List<Location> locs) {
-        for (Location loc : new ArrayList<>(locs))
-            if (getImediateObjectiveLocation(loc) != null)
-                return getImediateObjectiveLocation(loc);
-            else locs.addAll(getGrid().getValidAdjacentLocations(loc));
-        return locs.size() < 63 ? recursiveSearchSurroundings(new ArrayList<>(locs)) : null;
-    }
-
     public abstract Location getMoveLocation();
 
     private void tag() {
