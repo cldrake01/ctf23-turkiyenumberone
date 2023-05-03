@@ -34,10 +34,9 @@ public abstract class Player extends Actor {
     public final void act() {
         try {
             if (team.hasWon() || team.getOpposingTeam().hasWon()) {
-                if (team.hasWon()) {
+                if (team.hasWon())
                     if (hasFlag) setColor(Color.MAGENTA);
                     else setColor(Color.YELLOW);
-                }
                 return;
             }
 
@@ -91,7 +90,6 @@ public abstract class Player extends Actor {
                         Thread.sleep(2);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-
                     }
                 }
                 if (getMoveLocationThread.isAlive()) {
@@ -109,7 +107,7 @@ public abstract class Player extends Actor {
         }
     }
 
-    private final void processNeighbors() {
+    private void processNeighbors() {
         List<Location> neighborLocations = getGrid().getOccupiedAdjacentLocations(getLocation());
         for (int i = neighborLocations.size() - 1; i >= 0; i--) {
             Actor neighbor = getGrid().get(neighborLocations.get(i));
@@ -139,7 +137,7 @@ public abstract class Player extends Actor {
         }
     }
 
-    private final void makeMove(Location loc) {
+    private void makeMove(Location loc) {
         // if null, treat as if you are staying in same location
         if (loc == null) loc = getLocation();
 
@@ -170,16 +168,14 @@ public abstract class Player extends Actor {
 
     // get bounce-to location to move a player away from own flag
     private Location bounce() {
-        // preferred option - move directly away from flag until no longer too close
-        int inc = Math.random() < .5 ? 10 : -10;
+        return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+    }
 
-        for (int i = 0; i < 360; i += inc) {
-            int dir = team.getFlag().getLocation().getDirectionToward(getLocation()) + i;
-            Location loc = getLocation();
-            while (team.nearFlag(loc)) loc = loc.getAdjacentLocation(dir);
-            if (getGrid().isValid(loc) && getGrid().get(loc) == null && team.onSide(loc)) return loc;
-        }
-        return getLocation();   // failed to find any valid location - rare!
+    public Location evade() {
+        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
+            if (hasFlag() && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
+                return loc.getRow() > getLocation().getRow() ? getLocation().getAdjacentLocation(Location.SOUTH) : getLocation().getAdjacentLocation(Location.NORTH);
+        return null;
     }
 
     public Location intruderSearch() {
