@@ -152,7 +152,7 @@ public abstract class Player extends Actor {
         // if Player is on own side and flag isn't being carried, it can't move too close to own flag
         if (team.onSide(getLocation()) && getGrid().get(team.getFlag().getLocation()) instanceof Flag && team.nearFlag(loc)) {
             CtfWorld.extra += " Close to flag";
-            return;
+            bounce();
         }
 
         // move to loc and score appropriate points
@@ -168,13 +168,13 @@ public abstract class Player extends Actor {
 
     // get bounce-to location to move a player away from own flag
     private Location bounce() {
-        return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+        return new Location(getLocation().getRow() + 1, getLocation().getCol());
     }
 
     public Location evade() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
             if (hasFlag() && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
-                return loc.getRow() > getLocation().getRow() ? getLocation().getAdjacentLocation(Location.SOUTH) : getLocation().getAdjacentLocation(Location.NORTH);
+                return loc.getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
         return null;
     }
 
