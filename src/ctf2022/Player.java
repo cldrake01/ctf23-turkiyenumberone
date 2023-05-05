@@ -168,7 +168,7 @@ public abstract class Player extends Actor {
 
     // get bounce-to location to move a player away from own flag
     private Location bounce() {
-        return new Location(getLocation().getRow() + 1, getLocation().getCol());
+        return getLocation().getRow() >= getMyTeam().getFlag().getLocation().getRow() ? new Location(getLocation().getRow() + 1, getLocation().getCol()) : new Location(getLocation().getRow() - 1, getLocation().getCol());
     }
 
     public Location evade() {

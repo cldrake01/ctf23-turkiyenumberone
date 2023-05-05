@@ -22,5 +22,4 @@ public class SampleTeam extends Team {
         addPlayer(new RandomPlayer(new Location(40 + (int) (Math.random() * 3 - 1), 30)));
         addPlayer(new BeelinePlayer(new Location(45 + (int) (Math.random() * 3 - 1), 30)));
     }
-
 }
