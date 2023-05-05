@@ -34,9 +34,8 @@ public abstract class Player extends Actor {
     public final void act() {
         try {
             if (team.hasWon() || team.getOpposingTeam().hasWon()) {
-                if (team.hasWon())
-                    if (hasFlag) setColor(Color.MAGENTA);
-                    else setColor(Color.YELLOW);
+                if (team.hasWon()) if (hasFlag) setColor(Color.MAGENTA);
+                else setColor(Color.YELLOW);
                 return;
             }
 
@@ -168,7 +167,16 @@ public abstract class Player extends Actor {
 
     // get bounce-to location to move a player away from own flag
     private Location bounce() {
-        return getLocation().getRow() >= getMyTeam().getFlag().getLocation().getRow() ? new Location(getLocation().getRow() + 1, getLocation().getCol()) : new Location(getLocation().getRow() - 1, getLocation().getCol());
+        Location flag = getMyTeam().getFlag().getLocation();
+
+        Location location = getLocation().getRow() >= flag.getRow() ? new Location(getLocation().getRow() + 1, getLocation().getCol()) : new Location(getLocation().getRow() - 1, getLocation().getCol());
+
+        if (location.getCol() < flag.getCol() - 3 && location.getCol() > flag.getCol() + 3 && location.getRow() < flag.getRow() - 3 && location.getRow() > flag.getRow() + 3) {
+            putSelfInGridProtected(getGrid(), this.startLocation);
+            return null;
+        } else {
+            return location;
+        }
     }
 
     public Location evade() {
@@ -198,8 +206,7 @@ public abstract class Player extends Actor {
 
     public Location searchSurroundings() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            if (getImediateObjectiveLocation(loc) != null)
-                return getImediateObjectiveLocation(loc);
+            if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
         return null; // the reason we return null is to allow for class specific behavior, which may follow a call to this method.
     }
 
@@ -208,8 +215,7 @@ public abstract class Player extends Actor {
     private void tag() {
         Location oldLoc = getLocation();
         Location nextLoc;
-        do
-            nextLoc = team.adjustForSide(new Location((int) (Math.random() * getGrid().getNumRows()), 0), getGrid());
+        do nextLoc = team.adjustForSide(new Location((int) (Math.random() * getGrid().getNumRows()), 0), getGrid());
         while (getGrid().get(nextLoc) != null);
         moveTo(nextLoc);
         tagCoolDown = 10;
