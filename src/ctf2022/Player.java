@@ -174,9 +174,9 @@ public abstract class Player extends Actor {
 
         Location location = getLocation().getRow() >= flag.getRow() ? new Location(getLocation().getRow() + 1, getLocation().getCol()) : new Location(getLocation().getRow() - 1, getLocation().getCol());
 
-        if (location.getCol() < flag.getCol() - 3 && location.getCol() > flag.getCol() + 3 && location.getRow() < flag.getRow() - 3 && location.getRow() > flag.getRow() + 3) {
+        if ((location.getCol() > flag.getCol() - 3 && location.getRow() > flag.getRow() - 3) || (location.getRow() < flag.getRow() + 3 && location.getCol() < flag.getCol() + 3)) {
             putSelfInGridProtected(getGrid(), this.startLocation);
-            return null;
+            return this.startLocation;
         } else {
             return location;
         }
