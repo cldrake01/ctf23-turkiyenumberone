@@ -170,16 +170,7 @@ public abstract class Player extends Actor {
      * @return The new location of the player after the bounce, or null if the player is within the specified distance of the flag.
      */
     private Location bounce() {
-        Location flag = getMyTeam().getFlag().getLocation();
-
-        Location location = getLocation().getRow() >= flag.getRow() ? new Location(getLocation().getRow() + 1, getLocation().getCol()) : new Location(getLocation().getRow() - 1, getLocation().getCol());
-
-        if ((location.getCol() > flag.getCol() - 3 && location.getRow() > flag.getRow() - 3) || (location.getRow() < flag.getRow() + 3 && location.getCol() < flag.getCol() + 3)) {
-            putSelfInGridProtected(getGrid(), this.startLocation);
-            return this.startLocation;
-        } else {
-            return location;
-        }
+        return getMyTeam().getFlag().getLocation().getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
     }
 
     /**
