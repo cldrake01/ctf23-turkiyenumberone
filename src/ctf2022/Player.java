@@ -6,7 +6,6 @@ import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -213,7 +212,7 @@ public abstract class Player extends Actor {
      * @param loc The location of the player.
      * @return The objective location of the player, or null if the location is not a valid objective location.
      */
-    public Location getImediateObjectiveLocation(Location loc) {
+    public Location getImmediateObjectiveLocation(Location loc) {
         if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && ((Player) getGrid().get(loc)).getTeam().getSide() == getMyTeam().getSide())
             return loc;
         else if (getGrid().get(loc) instanceof Rock)
@@ -232,7 +231,7 @@ public abstract class Player extends Actor {
      */
     public Location searchSurroundings() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
+            if (getImmediateObjectiveLocation(loc) != null) return getImmediateObjectiveLocation(loc);
         return null;
     }
 
