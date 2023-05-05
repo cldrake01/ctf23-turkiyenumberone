@@ -165,7 +165,11 @@ public abstract class Player extends Actor {
         }
     }
 
-    // get bounce-to location to move a player away from own flag
+    /**
+     * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
+     *
+     * @return The new location of the player after the bounce, or null if the player is within the specified distance of the flag.
+     */
     private Location bounce() {
         Location flag = getMyTeam().getFlag().getLocation();
 
@@ -179,6 +183,11 @@ public abstract class Player extends Actor {
         }
     }
 
+    /**
+     * Attempts to evade other players by moving in the opposite direction of the enemy flag.
+     *
+     * @return The location of the player after the evasion, or null if there are no adjacent enemy players or if the player does not have the flag.
+     */
     public Location evade() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
             if (hasFlag() && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
@@ -186,6 +195,11 @@ public abstract class Player extends Actor {
         return null;
     }
 
+    /**
+     * Searches for enemy players on the grid and returns the location of the first enemy player found.
+     *
+     * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
+     */
     public Location intruderSearch() {
         for (Location loc : getGrid().getOccupiedLocations())
             if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && loc.getCol() < (getMyTeam().getSide() == 0 ? getGrid().getNumCols() / 2 : getGrid().getNumCols()) && loc.getCol() > (getMyTeam().getSide() == 0 ? 0 : getGrid().getNumCols() / 2))
@@ -193,6 +207,12 @@ public abstract class Player extends Actor {
         return null;
     }
 
+    /**
+     * Returns the objective location of the player based on the given location.
+     *
+     * @param loc The location of the player.
+     * @return The objective location of the player, or null if the location is not a valid objective location.
+     */
     public Location getImediateObjectiveLocation(Location loc) {
         if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && ((Player) getGrid().get(loc)).getTeam().getSide() == getMyTeam().getSide())
             return loc;
@@ -204,10 +224,16 @@ public abstract class Player extends Actor {
             return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
 
+    /**
+     * Searches for the immediate objective location in the surrounding locations of the current location.
+     *
+     * @return the immediate objective location if found, otherwise null.
+     *         The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
+     */
     public Location searchSurroundings() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
             if (getImediateObjectiveLocation(loc) != null) return getImediateObjectiveLocation(loc);
-        return null; // the reason we return null is to allow for class specific behavior, which may follow a call to this method.
+        return null;
     }
 
     public abstract Location getMoveLocation();
