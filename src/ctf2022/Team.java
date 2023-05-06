@@ -122,7 +122,7 @@ public abstract class Team {
     }
 
     public final ArrayList<Player> getPlayers() {
-        return (ArrayList<Player>) players.clone();
+        return new ArrayList<>(players);
     }
 
     public final Flag getFlag() {

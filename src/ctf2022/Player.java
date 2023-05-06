@@ -163,7 +163,7 @@ public abstract class Player extends Actor {
      */
     public Location intruderSearch() {
         for (Location loc : getGrid().getOccupiedLocations())
-            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && loc.getCol() < (getMyTeam().getSide() == 0 ? getGrid().getNumCols() / 2 : getGrid().getNumCols()) && loc.getCol() > (getMyTeam().getSide() == 0 ? 0 : getGrid().getNumCols() / 2))
+            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc))
                 return loc;
         return null;
     }
@@ -176,7 +176,7 @@ public abstract class Player extends Actor {
      */
     public Location getImmediateObjectiveLocation(Location loc) {
         if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && ((Player) getGrid().get(loc)).getTeam().getSide() == getMyTeam().getSide())
-            return loc;
+            return getOtherTeam().onSide(loc) ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())) : loc;
         else if (getGrid().get(loc) instanceof Rock)
             return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
@@ -189,11 +189,12 @@ public abstract class Player extends Actor {
      * Searches for the immediate objective location in the surrounding locations of the current location.
      *
      * @return the immediate objective location if found, otherwise null.
-     *         The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
+     * The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
      */
     public Location searchSurroundings() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            if (getImmediateObjectiveLocation(loc) != null) return getImmediateObjectiveLocation(loc);
+            if (getImmediateObjectiveLocation(loc) != null)
+                return getImmediateObjectiveLocation(loc);
         return null;
     }
 
