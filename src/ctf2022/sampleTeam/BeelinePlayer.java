@@ -11,21 +11,10 @@ public class BeelinePlayer extends Player {
         super(startLocation);
     }
 
-//    @Override
-//    public Location getImediateObjectiveLocation(Location loc) {
-//        return super.getImediateObjectiveLocation(loc);
-//    }
-//
-//    @Override
-//    public Location searchSurroundings() {
-//        return super.searchSurroundings();
-//    }
-
     public Location getMoveLocation() {
-        if (this.hasFlag()) {
+        if (this.hasFlag())
             return evade() != null ? evade() : this.getMyTeam().getFlag().getLocation();
-        } else {
+        else
             return searchSurroundings() != null ? searchSurroundings() : this.getOtherTeam().getFlag().getLocation();
-        }
     }
 }

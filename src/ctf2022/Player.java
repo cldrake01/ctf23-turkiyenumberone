@@ -167,7 +167,7 @@ public abstract class Player extends Actor {
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
      *
-     * @return The new location of the player after the bounce, or null if the player is within the specified distance of the flag.
+     * @return a location in the opposite direction of the flag.
      */
     private Location bounce() {
         return getMyTeam().getFlag().getLocation().getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
