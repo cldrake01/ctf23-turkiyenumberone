@@ -273,6 +273,6 @@ public abstract class Player extends Actor {
     }
 
     public String toString() {
-        return "Player";
+        return this.getClass().getName() + " " + this.getTeam().getName();
     }
 }
