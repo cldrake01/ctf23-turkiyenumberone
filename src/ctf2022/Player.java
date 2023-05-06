@@ -46,30 +46,6 @@ public abstract class Player extends Actor {
                 }
             } else {
                 processNeighbors();
-//                LocationHolder loc = new LocationHolder();
-//                Thread getMoveLocationThread = new Thread() {
-//                    @Override
-//                    public void run() {
-//                        Location l = getMoveLocation();
-//                        loc.location = l;
-//                    }
-//                };
-//                getMoveLocationThread.start();
-//                long timeLimit = TURNTIME / team.getPlayers().size();
-//                long startTime = System.currentTimeMillis();
-//                while (!this.getGrid().isValid(loc.location) && System.currentTimeMillis() - startTime < timeLimit) {
-//                    try {
-//                        Thread.sleep(1);
-//                    } catch (InterruptedException e) {
-//
-//                    }
-//                }
-//                if (!getMoveLocationThread.isInterrupted()) {
-//                    getMoveLocationThread.interrupt();
-//                    CtfWorld.extra += " Timeout.";
-//                }
-
-//                Location loc = getMoveLocation();
 
                 Location loc = new Location(-1, -1);
                 Thread getMoveLocationThread = new Thread() {
