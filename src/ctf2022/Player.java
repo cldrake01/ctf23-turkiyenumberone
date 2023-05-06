@@ -41,9 +41,7 @@ public abstract class Player extends Actor {
             if (tagCoolDown > 0) {
                 setColor(Color.BLACK);
                 tagCoolDown--;
-                if (tagCoolDown == 0) {
-                    setColor(team.getColor());
-                }
+                if (tagCoolDown == 0) setColor(team.getColor());
             } else {
                 processNeighbors();
 
