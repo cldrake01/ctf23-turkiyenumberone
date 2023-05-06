@@ -19,7 +19,7 @@ public abstract class Player extends Actor {
     private static final int CARRY = 5;
 
     // The time the whole team has, in milliseconds. Each player is individually capped on time, not the team
-    private static final int TURNTIME = 500;
+    private static final int TURN_TIME = 500;
 
     private Team team;
     private boolean hasFlag;
@@ -46,16 +46,13 @@ public abstract class Player extends Actor {
                 processNeighbors();
 
                 Location loc = new Location(-1, -1);
-                Thread getMoveLocationThread = new Thread() {
-                    @Override
-                    public void run() {
-                        Location l = getMoveLocation();
-                        loc.setCol(l.getCol());
-                        loc.setRow(l.getRow());
-                    }
-                };
+                Thread getMoveLocationThread = new Thread(() -> {
+                    Location l = getMoveLocation();
+                    loc.setCol(l.getCol());
+                    loc.setRow(l.getRow());
+                });
                 getMoveLocationThread.start();
-                long timeLimit = TURNTIME / team.getPlayers().size();
+                long timeLimit = TURN_TIME / team.getPlayers().size();
                 long startTime = System.currentTimeMillis();
                 while (!this.getGrid().isValid(loc) && System.currentTimeMillis() - startTime < timeLimit) {
                     try {
