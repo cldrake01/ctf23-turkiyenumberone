@@ -1,6 +1,7 @@
 package ctf;
 
 import info.gridworld.actor.Actor;
+import info.gridworld.actor.Rock;
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 
@@ -59,7 +60,6 @@ public abstract class Player extends Actor {
      */
     private volatile Location moveToLoc;
 
-    @SuppressWarnings("deprecation")
     public final void act() {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.equals("ctf.CTFWorld")) {
@@ -101,7 +101,7 @@ public abstract class Player extends Actor {
                     }
                     // if timeout - log it to err
                     if (callThread.isAlive()) {
-                        callThread.stop();  // deprecated, but ok in this case
+                        callThread.interrupt();  // deprecated, but ok in this case
                         System.err.println("Player ran out of time: " + this);
                         CTFWorld.addExtraText("Timeout");
                     }
@@ -202,18 +202,67 @@ public abstract class Player extends Actor {
 
     }
 
-    // get bounce-to location to move a player away from own flag
+    /**
+     * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
+     *
+     * @return a location in the opposite direction of the flag.
+     */
     private Location bounce() {
-        // preferred option - move directly away from flag until no longer too close
-        int inc = Math.random() < .5 ? 10 : -10;
+        return getMyTeam().getFlag().getLocation().getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
+    }
 
-        for (int i = 0; i < 360; i += inc) {
-            int dir = team.getFlag().getLocation().getDirectionToward(getLocation()) + i;
-            Location loc = getLocation();
-            while (team.nearFlag(loc)) loc = loc.getAdjacentLocation(dir);
-            if (getGrid().isValid(loc) && getGrid().get(loc) == null && team.onSide(loc)) return loc;
-        }
-        return getLocation();   // failed to find any valid location - rare!
+    /**
+     * Attempts to evade other players by moving in the opposite direction of the enemy flag.
+     *
+     * @return The location of the player after the evasion, or null if there are no adjacent enemy players or if the player does not have the flag.
+     */
+    public Location evade() {
+        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
+            if (hasFlag() && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
+                return loc.getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
+        return null;
+    }
+
+    /**
+     * Searches for enemy players on the grid and returns the location of the first enemy player found.
+     *
+     * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
+     */
+    public Location intruderSearch() {
+        for (Location loc : getGrid().getOccupiedLocations())
+            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc))
+                return loc;
+        return null;
+    }
+
+    /**
+     * Returns the objective location of the player based on the given location.
+     *
+     * @param loc The location of the player.
+     * @return The objective location of the player, or null if the location is not a valid objective location.
+     */
+    public Location getImmediateObjectiveLocation(Location loc) {
+        if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && ((Player) getGrid().get(loc)).getTeam().getSide() == getMyTeam().getSide())
+            return getOtherTeam().onSide(loc) ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())) : loc;
+        else if (getGrid().get(loc) instanceof Rock)
+            return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+        else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
+            return loc;
+        else
+            return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
+    }
+
+    /**
+     * Searches for the immediate objective location in the surrounding locations of the current location.
+     *
+     * @return the immediate objective location if found, otherwise null.
+     * The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
+     */
+    public Location searchSurroundings() {
+        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
+            if (getImmediateObjectiveLocation(loc) != null)
+                return getImmediateObjectiveLocation(loc);
+        return null;
     }
 
     /**
@@ -356,9 +405,10 @@ public abstract class Player extends Actor {
 
     /**
      * Returns the number of times this Player has been tagged
+     *
      * @return tag count
      */
-    public int getTagCount () {
+    public int getTagCount() {
         return this.tagCount;
     }
 

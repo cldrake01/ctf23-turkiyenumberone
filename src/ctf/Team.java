@@ -40,7 +40,7 @@ public abstract class Team {
         this.color = color;
         // set team name to the class name (remove fully-qualified package name parts)
         String[] parts = (" " + this.getClass()).split("\\.");
-        this.name = parts[parts.length-1];
+        this.name = parts[parts.length - 1];
 
         players = new ArrayList<>();
         this.flag = new Flag(this);
@@ -179,10 +179,10 @@ public abstract class Team {
     }
 
     /**
-     * Determines whether or not a Location is on the same side (left or right) as this Player
+     * Determines whether a Location is on the same side (left or right) as this Player
      *
      * @param loc the Location to be tested
-     * @return whether or not the Location is on the same side as this Player
+     * @return whether the Location is on the same side as this Player
      */
     public final boolean onSide(Location loc) {
         return side == 0 && loc.getCol() < 50 || side == 1 && loc.getCol() >= 50;
@@ -210,7 +210,7 @@ public abstract class Team {
      * @return this Team's Players
      */
     public final ArrayList<Player> getPlayers() {
-        return (ArrayList<Player>) players.clone();
+        return new ArrayList<>(players);
     }
 
     /**
@@ -268,9 +268,9 @@ public abstract class Team {
     }
 
     /**
-     * Returns whether or not this Team has won the game
+     * Returns whether this Team has won the game
      *
-     * @return whether or not this Team has won the game
+     * @return whether this Team has won the game
      */
     public final boolean hasWon() {
         return hasWon;

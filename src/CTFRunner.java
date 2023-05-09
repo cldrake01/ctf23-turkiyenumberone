@@ -1,14 +1,13 @@
-import ctf.CTFWorld;
-import ctf.Team;
+
 import ctf.CTFWorld;
 import ctf.Team;
 import teams.blueSampleTeam.BlueSampleTeam;
-import teams.redSampleTeam.RedSampleTeam;
+import teams.turkiyeNumberOne.TurkiyeNumberOne;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class CTFRunner {
-
     public static void main(String[] args) throws InterruptedException {
 //        Uncomment this to prevent any output from being printed to the console (speeds up performance)
 
@@ -19,8 +18,8 @@ public class CTFRunner {
 //        }));
 
         // create two teams
-        Team a = new BlueSampleTeam();
-        Team b = new RedSampleTeam();
+        Team a = new TurkiyeNumberOne(Color.red);
+        Team b = new BlueSampleTeam();
 
         // build and display a CTFWorld
         // use numClumps = 10 for testing

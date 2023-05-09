@@ -16,6 +16,7 @@ public class Flag extends Actor {
 
     /**
      * Constructs a new Flag.  This is only done when a Team is created and is only allowed by the CTF Team superclass.
+     *
      * @param team
      */
     public Flag(Team team) {
@@ -23,8 +24,7 @@ public class Flag extends Actor {
         if (callingClass.equals("ctf.Team")) {
             this.team = team;
             setColor(team.getColor());
-        }
-        else {
+        } else {
             CTFWorld.addExtraText("Cheat");
             System.err.println(callingClass + " has cheated and tried to construct a Flag");
         }
@@ -36,14 +36,13 @@ public class Flag extends Actor {
      * superclass when a Flag is dropped and becomes available to pick up again.
      *
      * @param grid the grid into which to place the Flag
-     * @param loc the location into which the Flag should be placed
+     * @param loc  the location into which the Flag should be placed
      */
     public final void putSelfInGrid(Grid<Actor> grid, Location loc) {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.equals("info.gridworld.actor.ActorWorld") || callingClass.equals("ctf.Player")) {
             super.putSelfInGrid(grid, loc);
-        }
-        else {
+        } else {
             CTFWorld.addExtraText("Cheat");
             System.err.println(callingClass + " has cheated and tried to add a Flag to the grid");
         }
@@ -51,7 +50,7 @@ public class Flag extends Actor {
 
     /**
      * Flags do not act
-      */
+     */
     public final void act() {
     }
 
@@ -60,8 +59,7 @@ public class Flag extends Actor {
         if (callingClass.equals("ctf.Player")) {
             super.removeSelfFromGrid();
             this.carrier = player;
-        }
-        else {
+        } else {
             CTFWorld.addExtraText("Cheat");
             System.err.println(callingClass + " has cheated and tried to pic up the Flag");
         }
@@ -76,13 +74,14 @@ public class Flag extends Actor {
 //        if (callingClass.endsWith("CtfWorld"))
 //            super.removeSelfFromGrid();
 //        else {
-            CTFWorld.addExtraText("Cheat");
-            System.err.println(callingClass + "has cheated and tried to remove the Flag");
+        CTFWorld.addExtraText("Cheat");
+        System.err.println(callingClass + "has cheated and tried to remove the Flag");
 //        }
     }
 
     /**
      * Gets the team that owns  this Flag
+     *
      * @return the team that owns thi Flag
      */
     public Team getTeam() {
@@ -104,6 +103,7 @@ public class Flag extends Actor {
 
     /**
      * Returns an indication of whether or not the Flag is currently being carried
+     *
      * @return whether or not the Flag is currently being carried
      */
     public boolean beingCarried() {

@@ -34,7 +34,7 @@ public final class CTFWorld extends ActorWorld {
     /**
      * Constructs a new Capture the Flag World with the two given Teams and 75 Rocks.
      *
-     * @param leftTeam the Team that will appear on the left side of the field
+     * @param leftTeam  the Team that will appear on the left side of the field
      * @param rightTeam the Team that will appear on the right side of the field (it will automatically be mirrored from the left side to the right side
      */
     public CTFWorld(Team leftTeam, Team rightTeam) {
@@ -112,6 +112,7 @@ public final class CTFWorld extends ActorWorld {
     public int getSteps() {
         return this.steps;
     }
+
     private Location mirror(Location loc, Grid<Actor> grid) {
         return new Location(loc.getRow(), (grid.getNumCols() - 1 - loc.getCol()));
     }
@@ -153,13 +154,11 @@ public final class CTFWorld extends ActorWorld {
                     this.leftTeam.setHasWon();
                 } else if (this.rightTeam.getScore() > this.leftTeam.getScore()) {
                     this.rightTeam.setHasWon();
-                }
-                else { // tie!
+                } else { // tie!
                     boolean coin = (Math.random() < 0.5);
                     if (coin) {
                         this.leftTeam.setHasWon();
-                    }
-                    else {
+                    } else {
                         this.rightTeam.setHasWon();
                     }
                 }
