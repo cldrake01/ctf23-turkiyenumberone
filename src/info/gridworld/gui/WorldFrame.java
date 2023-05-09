@@ -1,6 +1,6 @@
-/* 
+/*
  * AP(r) Computer Science GridWorld Case Study:
- * Copyright(c) 2002-2006 College Entrance Examination Board 
+ * Copyright(c) 2002-2006 College Entrance Examination Board
  * (http://www.collegeboard.com).
  *
  * This code is free software; you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * @author Julie Zelenski
  * @author Chris Nevison
  * @author Cay Horstmann
@@ -23,47 +23,16 @@ import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 import info.gridworld.world.World;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-
+import java.awt.*;
+import java.awt.event.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * The WorldFrame displays a World and allows manipulation of its occupants.
@@ -74,6 +43,9 @@ import java.io.StringWriter;
  */
 public class WorldFrame<T> extends JFrame
 {
+
+    public static boolean SHUTDOWN_ON_CLOSE = true;
+
     private GUIController<T> control;
     private GridPanel display;
     private JTextArea messageArea;
@@ -93,7 +65,7 @@ public class WorldFrame<T> extends JFrame
      */
     public WorldFrame(World<T> world)
     {
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         this.world = world;
         count++;
@@ -115,21 +87,21 @@ public class WorldFrame<T> extends JFrame
             public void windowClosing(WindowEvent event)
             {
                 count--;
-                if (count == 0)
+                if (count == 0 && SHUTDOWN_ON_CLOSE)
                     System.exit(0);
             }
         });
 
         displayMap = new DisplayMap();
         String title = System.getProperty("info.gridworld.gui.frametitle");
-        if (title == null) title = resources.getString("frame.title"); 
+        if (title == null) title = resources.getString("frame.title");
         setTitle(title);
         setLocation(25, 15);
 
         URL appIconUrl = getClass().getResource("GridWorld.gif");
         ImageIcon appIcon = new ImageIcon(appIconUrl);
         setIconImage(appIcon.getImage());
-        
+
         makeMenus();
 
         JPanel content = new JPanel();
@@ -140,25 +112,25 @@ public class WorldFrame<T> extends JFrame
         display = new GridPanel(displayMap, resources);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new
-           KeyEventDispatcher() 
-           {
-               public boolean dispatchKeyEvent(KeyEvent event)
-               {
-                   if (getFocusOwner() == null) return false;
-                   String text = KeyStroke.getKeyStrokeForEvent(event).toString();
-                   final String PRESSED = "pressed ";                  
-                   int n = text.indexOf(PRESSED);
-                   if (n < 0) return false;
-                   // filter out modifier keys; they are neither characters or actions
-                   if (event.getKeyChar() == KeyEvent.CHAR_UNDEFINED && !event.isActionKey()) 
-                       return false;
-                   text = text.substring(0, n)  + text.substring(n + PRESSED.length());
-                   boolean consumed = getWorld().keyPressed(text, display.getCurrentLocation());
-                   if (consumed) repaint();
-                   return consumed;
-               }
-           });
-        
+                                                                                            KeyEventDispatcher()
+                                                                                            {
+                                                                                                public boolean dispatchKeyEvent(KeyEvent event)
+                                                                                                {
+                                                                                                    if (getFocusOwner() == null) return false;
+                                                                                                    String text = KeyStroke.getKeyStrokeForEvent(event).toString();
+                                                                                                    final String PRESSED = "pressed ";
+                                                                                                    int n = text.indexOf(PRESSED);
+                                                                                                    if (n < 0) return false;
+                                                                                                    // filter out modifier keys; they are neither characters or actions
+                                                                                                    if (event.getKeyChar() == KeyEvent.CHAR_UNDEFINED && !event.isActionKey())
+                                                                                                        return false;
+                                                                                                    text = text.substring(0, n)  + text.substring(n + PRESSED.length());
+                                                                                                    boolean consumed = getWorld().keyPressed(text, display.getCurrentLocation());
+                                                                                                    if (consumed) repaint();
+                                                                                                    return consumed;
+                                                                                                }
+                                                                                            });
+
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewport(new PseudoInfiniteViewport(scrollPane));
         scrollPane.setViewportView(display);
@@ -247,7 +219,7 @@ public class WorldFrame<T> extends JFrame
     /**
      * Displays an error message
      * @param t the throwable that describes the error
-     * @param resource the resource whose .text/.title strings 
+     * @param resource the resource whose .text/.title strings
      * should be used in the dialog
      */
     public void showError(Throwable t, String resource)
@@ -275,7 +247,7 @@ public class WorldFrame<T> extends JFrame
         String reason = resources.getString("error.reason");
         String message = text + "\n"
                 + MessageFormat.format(reason, new Object[]
-                    { t });
+                { t });
 
         JOptionPane.showMessageDialog(this, message, title,
                 JOptionPane.ERROR_MESSAGE);
@@ -298,7 +270,7 @@ public class WorldFrame<T> extends JFrame
     }
 
     private void configureMenuItem(JMenuItem item, String resource,
-            ActionListener listener)
+                                   ActionListener listener)
     {
         configureAbstractButton(item, resource);
         item.addActionListener(listener);
@@ -310,7 +282,7 @@ public class WorldFrame<T> extends JFrame
             {
                 int menuMask = getToolkit().getMenuShortcutKeyMask();
                 KeyStroke key = KeyStroke.getKeyStroke(KeyStroke.getKeyStroke(
-                        accel.substring(metaPrefix.length())).getKeyCode(),
+                                accel.substring(metaPrefix.length())).getKeyCode(),
                         menuMask);
                 item.setAccelerator(key);
             }
@@ -484,7 +456,7 @@ public class WorldFrame<T> extends JFrame
     {
         String html = MessageFormat.format(resources
                 .getString("dialog.about.text"), new Object[]
-            { resources.getString("version.id") });
+                { resources.getString("version.id") });
         String[] props = { "java.version", "java.vendor", "java.home", "os.name", "os.arch", "os.version", "user.name", "user.home", "user.dir" };
         html += "<table border='1'>";
         for (String prop : props)
@@ -497,12 +469,12 @@ public class WorldFrame<T> extends JFrame
             catch (SecurityException ex)
             {
                 // oh well...
-            }           
+            }
         }
         html += "</table>";
         html = "<html>" + html + "</html>";
         JOptionPane.showMessageDialog(this, new JLabel(html), resources
-                .getString("dialog.about.title"),
+                        .getString("dialog.about.title"),
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -595,7 +567,7 @@ public class WorldFrame<T> extends JFrame
             JOptionPane pane = new JOptionPane(new JScrollPane(area),
                     JOptionPane.ERROR_MESSAGE, JOptionPane.YES_NO_OPTION, null,
                     new String[]
-                        { copyOption, resources.getString("cancel") });
+                            { copyOption, resources.getString("cancel") });
             pane.createDialog(WorldFrame.this, e.toString()).setVisible(true);
             if (copyOption.equals(pane.getValue()))
             {

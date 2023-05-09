@@ -1,6 +1,6 @@
-/* 
+/*
  * AP(r) Computer Science GridWorld Case Study:
- * Copyright(c) 2002-2006 College Entrance Examination Board 
+ * Copyright(c) 2002-2006 College Entrance Examination Board
  * (http://www.collegeboard.com).
  *
  * This code is free software; you can redistribute it and/or modify
@@ -11,7 +11,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * @author Julie Zelenski
  * @author Cay Horstmann
  */
@@ -21,16 +21,8 @@ package info.gridworld.gui;
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -40,15 +32,6 @@ import java.awt.geom.Rectangle2D;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-
-import javax.swing.JPanel;
-import javax.swing.JToolTip;
-import javax.swing.JViewport;
-import javax.swing.Scrollable;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.ToolTipManager;
 
 /**
  * A <code>GridPanel</code> is a panel containing a graphical display of the
@@ -61,7 +44,7 @@ import javax.swing.ToolTipManager;
 public class GridPanel extends JPanel implements Scrollable,
         PseudoInfiniteViewport.Pannable
 {
-    private static final int MIN_CELL_SIZE = 16;
+    private static final int MIN_CELL_SIZE = 4;
     private static final int DEFAULT_CELL_SIZE = 16;
     private static final int DEFAULT_CELL_COUNT = 10;
     private static final int TIP_DELAY = 1000;
@@ -77,7 +60,7 @@ public class GridPanel extends JPanel implements Scrollable,
     private Timer tipTimer;
     private JToolTip tip;
     private JPanel glassPane;
-    
+
     /**
      * Construct a new GridPanel object with no grid. The view will be
      * empty.
@@ -102,7 +85,7 @@ public class GridPanel extends JPanel implements Scrollable,
             return;
 
         Insets insets = getInsets();
-        g2.setColor(backgroundColor); 
+        g2.setColor(backgroundColor);
         g2.fillRect(insets.left, insets.top, numCols * (cellSize + 1) + 1, numRows
                 * (cellSize + 1) + 1);
 
@@ -161,10 +144,10 @@ public class GridPanel extends JPanel implements Scrollable,
 
         int miny = Math.max(0, (curClip.y - top) / (cellSize + 1)) * (cellSize + 1) + top;
         int minx = Math.max(0, (curClip.x - left) / (cellSize + 1)) * (cellSize + 1) + left;
-        int maxy = Math.min(numRows, 
-                (curClip.y + curClip.height - top + cellSize) / (cellSize + 1)) 
+        int maxy = Math.min(numRows,
+                (curClip.y + curClip.height - top + cellSize) / (cellSize + 1))
                 * (cellSize + 1) + top;
-        int maxx = Math.min(numCols, 
+        int maxx = Math.min(numCols,
                 (curClip.x + curClip.width - left + cellSize) / (cellSize + 1))
                 * (cellSize + 1) + left;
 
@@ -198,7 +181,7 @@ public class GridPanel extends JPanel implements Scrollable,
         for (int index = 0; index < occupantLocs.size(); index++)
         {
             Location loc = (Location) occupantLocs.get(index);
-            
+
             int xleft = colToXCoord(loc.getCol());
             int ytop = rowToYCoord(loc.getRow());
             drawOccupant(g2, xleft, ytop, grid.get(loc));
@@ -283,7 +266,7 @@ public class GridPanel extends JPanel implements Scrollable,
 
         if (grid.getNumRows() == -1 && grid.getNumCols() == -1)
         {
-            numRows = numCols = 2000; 
+            numRows = numCols = 2000;
             // This determines the "virtual" size of the pan world
         }
         else
@@ -291,7 +274,7 @@ public class GridPanel extends JPanel implements Scrollable,
             numRows = grid.getNumRows();
             numCols = grid.getNumCols();
         }
-        recalculateCellSize(MIN_CELL_SIZE);        
+        recalculateCellSize(MIN_CELL_SIZE);
     }
 
     // private helpers to calculate extra width/height needs for borders/insets.
@@ -311,7 +294,7 @@ public class GridPanel extends JPanel implements Scrollable,
      */
     public Dimension getPreferredSize()
     {
-        return new Dimension(numCols * (cellSize + 1) + 1 + extraWidth(), 
+        return new Dimension(numCols * (cellSize + 1) + 1 + extraWidth(),
                 numRows * (cellSize + 1) + 1 + extraHeight());
     }
 
@@ -321,25 +304,25 @@ public class GridPanel extends JPanel implements Scrollable,
      */
     public Dimension getMinimumSize()
     {
-        return new Dimension(numCols * (MIN_CELL_SIZE + 1) + 1 + extraWidth(), 
+        return new Dimension(numCols * (MIN_CELL_SIZE + 1) + 1 + extraWidth(),
                 numRows * (MIN_CELL_SIZE + 1) + 1 + extraHeight());
     }
 
     /**
-     * Zooms in the display by doubling the current cell size.
+     * Zooms in the display by adding 2.
      */
     public void zoomIn()
     {
-        cellSize *= 2;
+        cellSize = cellSize + 2;
         revalidate();
     }
 
     /**
-     * Zooms out the display by halving the current cell size.
+     * Zooms out the display by subtracting 2.
      */
     public void zoomOut()
     {
-        cellSize = Math.max(cellSize / 2, MIN_CELL_SIZE);
+        cellSize = Math.max(cellSize - 2, MIN_CELL_SIZE);
         revalidate();
     }
 
@@ -426,11 +409,11 @@ public class GridPanel extends JPanel implements Scrollable,
         if (f != null)
             return MessageFormat.format(resources
                     .getString("cell.tooltip.nonempty"), new Object[]
-                { loc, f });
+                    { loc, f });
         else
             return MessageFormat.format(resources
                     .getString("cell.tooltip.empty"), new Object[]
-                { loc, f });
+                    { loc, f });
     }
 
     /**
@@ -572,6 +555,7 @@ public class GridPanel extends JPanel implements Scrollable,
 
             JViewport vp = getEnclosingViewport();
             Dimension viewableSize = (vp != null) ? vp.getSize() : getSize();
+//            System.out.println(viewableSize);
             int desiredCellSize = Math.min(
                     (viewableSize.height - extraHeight()) / numRows,
                     (viewableSize.width - extraWidth()) / numCols) - 1;
@@ -579,12 +563,12 @@ public class GridPanel extends JPanel implements Scrollable,
             // DEFAULT_CELL_SIZE * Math.pow(2, k)
 
             cellSize = DEFAULT_CELL_SIZE;
-            if (cellSize <= desiredCellSize)
-                while (2 * cellSize <= desiredCellSize)
-                    cellSize *= 2;
-            else
-                while (cellSize / 2 >= Math.max(desiredCellSize, MIN_CELL_SIZE))
-                    cellSize /= 2;
+//            if (cellSize <= desiredCellSize)
+//                while (2 * cellSize <= desiredCellSize)
+//                    cellSize *= 2;
+//            else
+//                while (cellSize / 2 >= Math.max(desiredCellSize, MIN_CELL_SIZE))
+//                    cellSize /= 2;
         }
         revalidate();
     }
@@ -600,13 +584,13 @@ public class GridPanel extends JPanel implements Scrollable,
     // JScrollPane. The 5 methods below are the methods in that interface
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
-            int orientation, int direction)
+                                          int orientation, int direction)
     {
         return cellSize + 1;
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
-            int orientation, int direction)
+                                           int orientation, int direction)
     {
         if (orientation == SwingConstants.VERTICAL)
             return (int) (visibleRect.height * .9);
@@ -626,7 +610,7 @@ public class GridPanel extends JPanel implements Scrollable,
 
     public Dimension getPreferredScrollableViewportSize()
     {
-        return new Dimension(DEFAULT_CELL_COUNT * (DEFAULT_CELL_SIZE + 1) + 1 + extraWidth(), 
+        return new Dimension(DEFAULT_CELL_COUNT * (DEFAULT_CELL_SIZE + 1) + 1 + extraWidth(),
                 DEFAULT_CELL_COUNT * (DEFAULT_CELL_SIZE + 1) + 1 + extraHeight());
     }
 

@@ -49,7 +49,9 @@ public class ImageDisplay extends AbstractDisplay
     private Map<String, Image> tintedVersions = new HashMap<String, Image>();
 
     /**
-     * Constructs an object that knows how to display an image.
+     * Constructs an object that knows how to display an image. Looks for the
+     * named file first in the jar file, then in the current directory.
+     * @param imageFilename name of file containing image
      */
     public ImageDisplay(Class cl) throws IOException
     {
