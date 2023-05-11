@@ -25,7 +25,7 @@ public class CTFRunner {
         // use numClumps = 10 for testing
         // competition will set num clumps to 75
 
-        CTFWorld world = new CTFWorld(a, b, 10, 9);  // for development and testing
+        CTFWorld world = new CTFWorld(a, b, 75, 9);  // for development and testing
 //        CTFWorld world = new CTFWorld(a, b, 75, 9);
         world.show();
 

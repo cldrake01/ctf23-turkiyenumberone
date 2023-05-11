@@ -66,10 +66,8 @@ public abstract class Player extends Actor {
             try {
                 if (team.hasWon() || team.getOpposingTeam().hasWon()) {
                     if (team.hasWon()) {
-                        if (hasFlag)
-                            setColor(Color.MAGENTA);
-                        else
-                            setColor(Color.YELLOW);
+                        if (hasFlag) setColor(Color.MAGENTA);
+                        else setColor(Color.YELLOW);
                     }
                     return;
                 }
@@ -179,6 +177,7 @@ public abstract class Player extends Actor {
 
         // if Player is on own side and flag isn't being carried, it can't move too close to own flag
         if (team.onSide(getLocation()) && getGrid().get(team.getFlag().getLocation()) instanceof Flag && team.nearFlag(loc)) {
+            loc = bounce();
             CTFWorld.addExtraText("Close to flag");
             System.out.println("Player prohibited from moving too close to the flag: " + this);
             return;
@@ -199,7 +198,6 @@ public abstract class Player extends Actor {
                 team.addCarry();
             }
         }
-
     }
 
     /**
@@ -233,7 +231,7 @@ public abstract class Player extends Actor {
     public Location intruderSearch() {
         for (Location loc : getGrid().getOccupiedLocations())
             if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc))
-                return loc;
+                return getGrid().get(loc) instanceof Rock ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())) : loc;
         return null;
     }
 
@@ -250,8 +248,7 @@ public abstract class Player extends Actor {
             return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
             return loc;
-        else
-            return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
+        return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
 
     /**
@@ -262,8 +259,7 @@ public abstract class Player extends Actor {
      */
     public Location searchSurroundings() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            if (getImmediateObjectiveLocation(loc) != null)
-                return getImmediateObjectiveLocation(loc);
+            if (getImmediateObjectiveLocation(loc) != null) return getImmediateObjectiveLocation(loc);
         return null;
     }
 
@@ -282,8 +278,7 @@ public abstract class Player extends Actor {
             Location nextLoc;
             do {
                 nextLoc = team.adjustForSide(new Location((int) (Math.random() * getGrid().getNumRows()), 0), getGrid());
-            }
-            while (getGrid().get(nextLoc) != null);
+            } while (getGrid().get(nextLoc) != null);
             moveTo(nextLoc);
             tagCoolDown = 10;
             if (hasFlag) {
@@ -309,8 +304,7 @@ public abstract class Player extends Actor {
     public final void putSelfInGrid(Grid<Actor> grid, Location loc) {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.equals("info.gridworld.actor.ActorWorld")) {
-            if (getGrid() != null)
-                super.removeSelfFromGrid();
+            if (getGrid() != null) super.removeSelfFromGrid();
             hasFlag = false;
             tagCoolDown = 0;
             setColor(team.getColor());
@@ -327,8 +321,7 @@ public abstract class Player extends Actor {
      */
     public final void removeSelfFromGrid() {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
-        if (callingClass.equals("ctf.CtfWorld"))
-            super.removeSelfFromGrid();
+        if (callingClass.equals("ctf.CtfWorld")) super.removeSelfFromGrid();
         else {
             CTFWorld.addExtraText("Cheat");
             System.err.println(callingClass + " has cheated and tried to remove a player from the grid");
@@ -397,8 +390,7 @@ public abstract class Player extends Actor {
      */
     public final void moveTo(Location loc) {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
-        if (callingClass.equals("ctf.Player"))
-            super.moveTo(loc);
+        if (callingClass.equals("ctf.Player")) super.moveTo(loc);
         else {
             CTFWorld.addExtraText("Cheat");
             System.err.println(callingClass + " has attempted an unauthorized moveTo");
