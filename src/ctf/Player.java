@@ -220,6 +220,8 @@ public abstract class Player extends Actor {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
             if (hasFlag() && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
                 return loc.getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
+            else if (getGrid().get(loc) instanceof Rock)
+                return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         return null;
     }
 
