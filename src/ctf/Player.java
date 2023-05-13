@@ -216,9 +216,9 @@ public abstract class Player extends Actor {
      */
     public Location evade() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            if (hasFlag() && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getMyTeam().onSide(getLocation()))
+            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getMyTeam().onSide(getLocation()))
                 return loc.getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
-            else if (getGrid().get(loc) instanceof Rock)
+            else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()))) instanceof Rock)
                 return getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol())))).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol())))).size()));
         return null;
     }
