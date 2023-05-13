@@ -206,7 +206,7 @@ public abstract class Player extends Actor {
      * @return a location in the opposite direction of the flag.
      */
     private Location bounce() {
-        return getMyTeam().getFlag().getLocation().getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
+        return getMyTeam().getFlag().getLocation().getCol() >= getLocation().getCol() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
     }
 
     /**
@@ -219,7 +219,7 @@ public abstract class Player extends Actor {
             if (hasFlag() && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
                 return loc.getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
             else if (getGrid().get(loc) instanceof Rock)
-                return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                return getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getMyTeam().getFlag().getDirection())).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getMyTeam().getFlag().getDirection())).size()));
         return null;
     }
 
@@ -231,7 +231,7 @@ public abstract class Player extends Actor {
     public Location intruderSearch() {
         for (Location loc : getGrid().getOccupiedLocations())
             if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc))
-                return getGrid().get(loc) instanceof Rock ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())) : loc;
+                return getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc))) instanceof Rock ? getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc))).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc))).size())) : loc;
         return null;
     }
 
