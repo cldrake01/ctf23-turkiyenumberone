@@ -180,7 +180,7 @@ public abstract class Player extends Actor {
             loc = bounce();
             CTFWorld.addExtraText("Close to flag");
             System.out.println("Player prohibited from moving too close to the flag: " + this);
-            return;
+            loc = bounce();
         }
 
         // move to loc and score appropriate points
@@ -334,9 +334,9 @@ public abstract class Player extends Actor {
     }
 
     /**
-     * determines whether or not a Player is carrying the Flag
+     * determines whether a Player is carrying the Flag
      *
-     * @return whether or not this Player is carrying the Flag
+     * @return whether this Player is carrying the Flag
      */
     public final boolean hasFlag() {
         return hasFlag;

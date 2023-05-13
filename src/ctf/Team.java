@@ -191,10 +191,10 @@ public abstract class Team {
     final static int RANGE = 4;
 
     /**
-     * Determines whether or not a Location is within 4 spaces of this Player's Flag
+     * Determines whether a Location is within 4 spaces of this Player's Flag
      *
      * @param loc the Location to be tested
-     * @return whether or not the Location is within 4 spaces of this Player's Flag
+     * @return whether the Location is within 4 spaces of this Player's Flag
      */
     public final boolean nearFlag(Location loc) {
         if (flag == null || flag.getLocation() == null) return false;

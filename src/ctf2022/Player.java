@@ -121,7 +121,7 @@ public abstract class Player extends Actor {
         // if Player is on own side and flag isn't being carried, it can't move too close to own flag
         if (team.onSide(getLocation()) && getGrid().get(team.getFlag().getLocation()) instanceof Flag && team.nearFlag(loc)) {
             CtfWorld.extra += " Close to flag";
-            bounce();
+            loc = bounce();
         }
 
         // move to loc and score appropriate points

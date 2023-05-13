@@ -1,8 +1,6 @@
 package teams.turkiyeNumberOne;
 
 import ctf.Player;
-
-import info.gridworld.actor.Rock;
 import info.gridworld.grid.Location;
 
 public class BeelinePlayer extends Player {
