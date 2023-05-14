@@ -10,8 +10,8 @@ public class BeelinePlayer extends Player {
     }
 
     public Location getMoveLocation() {
-        if (getOtherTeam().getFlag().beingCarried() || (!getMyTeam().onSide(getLocation()) && hasFlag()))
-            return evade() != null && !getMyTeam().onSide(getLocation()) ? evade() : getMyTeam().getFlag().getLocation();
+        if (getOtherTeam().getFlag().beingCarried())
+            return evade() != null ? evade() : getMyTeam().getFlag().getLocation();
         else
             return searchSurroundings() != null ? searchSurroundings() : getOtherTeam().getFlag().getLocation();
     }

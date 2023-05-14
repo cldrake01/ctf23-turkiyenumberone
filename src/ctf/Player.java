@@ -206,7 +206,6 @@ public abstract class Player extends Actor {
      * @return a location in the opposite direction of the flag.
      */
     private Location bounce() {
-        System.out.println(getLocation().getRow());
         return getMyTeam().getFlag().getLocation().getRow() > getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
     }
 
@@ -253,7 +252,8 @@ public abstract class Player extends Actor {
             return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
             return loc;
-        return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
+        else
+            return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
 
     /**
