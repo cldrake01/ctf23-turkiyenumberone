@@ -19,7 +19,7 @@ public class CTFRunner {
 
         // create two teams
         Team a = new TurkiyeNumberOne(Color.red);
-        Team b = new BlueSampleTeam();
+        Team b = new TurkiyeNumberOne(Color.blue);
 
         // build and display a CTFWorld
         // use numClumps = 10 for testing
