@@ -218,14 +218,9 @@ public abstract class Player extends Actor {
      */
     public Location evade() {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            if (!getMyTeam().onSide(getLocation()) && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
                 return loc.getRow() >= getLocation().getRow()
                         ? getLocation().getAdjacentLocation(Location.NORTH)
                         : getLocation().getAdjacentLocation(Location.SOUTH);
-            else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()))) instanceof Rock)
-                return getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol())))).size() > 0
-                        ? getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol())))).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol())))).size()))
-                        : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         return null;
     }
 
