@@ -207,8 +207,8 @@ public abstract class Player extends Actor {
      */
     private Location bounce() {
         return getMyTeam().getFlag().getLocation().getRow() > getLocation().getRow()
-                ? getLocation().getAdjacentLocation(Location.NORTH) == null ? getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation())) : getLocation().getAdjacentLocation(Location.SOUTH)
-                : getLocation().getAdjacentLocation(Location.SOUTH) == null ? getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation())) : getLocation().getAdjacentLocation(Location.SOUTH);
+                ? (getGrid().get(getLocation().getAdjacentLocation(Location.NORTH)) instanceof Rock ? getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(Location.NORTH)).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(Location.NORTH)).size())) : getLocation().getAdjacentLocation(Location.NORTH))
+                : (getGrid().get(getLocation().getAdjacentLocation(Location.SOUTH)) instanceof Rock ? getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(Location.NORTH)).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(Location.SOUTH)).size())) : getLocation().getAdjacentLocation(Location.SOUTH));
     }
 
     /**
@@ -220,8 +220,8 @@ public abstract class Player extends Actor {
         for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
             if (!getMyTeam().onSide(getLocation()) && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
                 return loc.getRow() >= getLocation().getRow()
-                        ? getLocation().getAdjacentLocation(Location.NORTH) == null ? getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation())) : getLocation().getAdjacentLocation(Location.SOUTH)
-                        : getLocation().getAdjacentLocation(Location.SOUTH) == null ? getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation())) : getLocation().getAdjacentLocation(Location.SOUTH);
+                        ? getLocation().getAdjacentLocation(Location.NORTH)
+                        : getLocation().getAdjacentLocation(Location.SOUTH);
             else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()))) instanceof Rock)
                 return getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol())))).size() > 0
                         ? getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol())))).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(getLocation().getDirectionToward(new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol())))).size()))
@@ -250,8 +250,8 @@ public abstract class Player extends Actor {
      * @return The objective location of the player, or null if the location is not a valid objective location.
      */
     public Location getImmediateObjectiveLocation(Location loc) {
-        if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && ((Player) getGrid().get(loc)).getTeam().getSide() == getMyTeam().getSide())
-            return getOtherTeam().onSide(loc) ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())) : loc;
+        if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && !getOtherTeam().onSide(loc))
+            return loc;
         else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation()))) instanceof Rock && getGrid().getEmptyAdjacentLocations(getLocation()).size() > 0)
             return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
