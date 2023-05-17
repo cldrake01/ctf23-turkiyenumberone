@@ -90,13 +90,27 @@ public class BasePlayer extends ctf.Player {
     }
 
     /**
+     * Determines whether a Location is within 4 spaces of this Player's Flag
+     *
+     * @param loc the Location to be tested
+     * @return whether the Location is within 4 spaces of this Player's Flag
+     */
+    public final boolean nearFlagEnhanced(Location loc) {
+        if (getMyTeam().getFlag() == null || getMyTeam().getFlag().getLocation() == null) return false;
+        Location fLoc = getMyTeam().getFlag().getLocation();
+
+        return Math.abs(loc.getRow() - fLoc.getRow()) <= 5 && Math.abs(loc.getCol() - fLoc.getCol()) <= 5;
+        //return Math.sqrt(Math.pow(loc.getRow() - flag.getLocation().getRow(), 2) + Math.pow(loc.getCol() - flag.getLocation().getCol(), 2)) <= 4;
+    }
+
+    /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
      *
      * @return a location in the opposite direction of the flag.
      */
     public Location bounce(Location loc) {
-        if (getMyTeam().onSide(getLocation()) && getGrid().get(getMyTeam().getFlag().getLocation()) instanceof Flag && getMyTeam().nearFlag(loc)) {
-            if (getMyTeam().getFlag().getLocation().getRow() > getLocation().getRow()) {
+        if (getMyTeam().onSide(getLocation()) && getGrid().get(getMyTeam().getFlag().getLocation()) instanceof Flag && this.nearFlagEnhanced(loc)) {
+            if (getMyTeam().getFlag().getLocation().getCol() >= loc.getCol()) {
                 Location northAdjacentLocation = getLocation().getAdjacentLocation(Location.NORTH);
                 return getGrid().get(northAdjacentLocation) instanceof Rock
                         ? getGrid().getEmptyAdjacentLocations(northAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(northAdjacentLocation).size()))
