@@ -1,7 +1,6 @@
 package ctf;
 
 import info.gridworld.actor.Actor;
-import info.gridworld.actor.Rock;
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 
@@ -60,14 +59,17 @@ public abstract class Player extends Actor {
      */
     private volatile Location moveToLoc;
 
+    @SuppressWarnings("deprecation")
     public final void act() {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.equals("ctf.CTFWorld")) {
             try {
                 if (team.hasWon() || team.getOpposingTeam().hasWon()) {
                     if (team.hasWon()) {
-                        if (hasFlag) setColor(Color.MAGENTA);
-                        else setColor(Color.YELLOW);
+                        if (hasFlag)
+                            setColor(Color.MAGENTA);
+                        else
+                            setColor(Color.YELLOW);
                     }
                     return;
                 }
@@ -99,7 +101,7 @@ public abstract class Player extends Actor {
                     }
                     // if timeout - log it to err
                     if (callThread.isAlive()) {
-                        callThread.interrupt();  // deprecated, but ok in this case
+                        callThread.stop();  // deprecated, but ok in this case
                         System.err.println("Player ran out of time: " + this);
                         CTFWorld.addExtraText("Timeout");
                     }
@@ -177,10 +179,9 @@ public abstract class Player extends Actor {
 
         // if Player is on own side and flag isn't being carried, it can't move too close to own flag
         if (team.onSide(getLocation()) && getGrid().get(team.getFlag().getLocation()) instanceof Flag && team.nearFlag(loc)) {
-            loc = bounce();
+//            loc = bounce();
             CTFWorld.addExtraText("Close to flag");
             System.out.println("Player prohibited from moving too close to the flag: " + this);
-            loc = bounce();
         }
 
         // move to loc and score appropriate points
@@ -200,73 +201,18 @@ public abstract class Player extends Actor {
         }
     }
 
-    /**
-     * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
-     *
-     * @return a location in the opposite direction of the flag.
-     */
+    // get bounce-to location to move a player away from own flag
     private Location bounce() {
-        return getMyTeam().getFlag().getLocation().getRow() > getLocation().getRow()
-                ? (getGrid().get(getLocation().getAdjacentLocation(Location.NORTH)) instanceof Rock ? getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(Location.NORTH)).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(Location.NORTH)).size())) : getLocation().getAdjacentLocation(Location.NORTH))
-                : (getGrid().get(getLocation().getAdjacentLocation(Location.SOUTH)) instanceof Rock ? getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(Location.NORTH)).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation().getAdjacentLocation(Location.SOUTH)).size())) : getLocation().getAdjacentLocation(Location.SOUTH));
-    }
+        // preferred option - move directly away from flag until no longer too close
+        int inc = Math.random() < .5 ? 10 : -10;
 
-    /**
-     * Attempts to evade other players by moving in the opposite direction of the enemy flag.
-     *
-     * @return The location of the player after the evasion, or null if there are no adjacent enemy players or if the player does not have the flag.
-     */
-    public Location evade() {
-        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-                return loc.getRow() >= getLocation().getRow()
-                        ? getLocation().getAdjacentLocation(Location.NORTH)
-                        : getLocation().getAdjacentLocation(Location.SOUTH);
-        return null;
-    }
-
-    /**
-     * Searches for enemy players on the grid and returns the location of the first enemy player found.
-     *
-     * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
-     */
-    public Location intruderSearch() {
-        for (Location loc : getGrid().getOccupiedLocations())
-            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc))
-                return getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc))) instanceof Rock
-                        ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()))
-                        : loc;
-        return null;
-    }
-
-    /**
-     * Returns the objective location of the player based on the given location.
-     *
-     * @param loc The location of the player.
-     * @return The objective location of the player, or null if the location is not a valid objective location.
-     */
-    public Location getImmediateObjectiveLocation(Location loc) {
-        if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && !getOtherTeam().onSide(loc))
-            return loc;
-        else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation()))) instanceof Rock && getGrid().getEmptyAdjacentLocations(getLocation()).size() > 0)
-            return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-        else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
-            return loc;
-        else if (!getMyTeam().onSide(getLocation()) && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
-            return loc.getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
-        else
-            return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
-    }
-
-    /**
-     * Searches for the immediate objective location in the surrounding locations of the current location.
-     *
-     * @return the immediate objective location if found, otherwise null.
-     * The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
-     */
-    public Location searchSurroundings() {
-        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            if (getImmediateObjectiveLocation(loc) != null) return getImmediateObjectiveLocation(loc);
-        return null;
+        for (int i = 0; i < 360; i += inc) {
+            int dir = team.getFlag().getLocation().getDirectionToward(getLocation()) + i;
+            Location loc = getLocation();
+            while (team.nearFlag(loc)) loc = loc.getAdjacentLocation(dir);
+            if (getGrid().isValid(loc) && getGrid().get(loc) == null && team.onSide(loc)) return loc;
+        }
+        return getLocation();   // failed to find any valid location - rare!
     }
 
     /**
@@ -284,7 +230,8 @@ public abstract class Player extends Actor {
             Location nextLoc;
             do {
                 nextLoc = team.adjustForSide(new Location((int) (Math.random() * getGrid().getNumRows()), 0), getGrid());
-            } while (getGrid().get(nextLoc) != null);
+            }
+            while (getGrid().get(nextLoc) != null);
             moveTo(nextLoc);
             tagCoolDown = 10;
             if (hasFlag) {
@@ -310,7 +257,8 @@ public abstract class Player extends Actor {
     public final void putSelfInGrid(Grid<Actor> grid, Location loc) {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.equals("info.gridworld.actor.ActorWorld")) {
-            if (getGrid() != null) super.removeSelfFromGrid();
+            if (getGrid() != null)
+                super.removeSelfFromGrid();
             hasFlag = false;
             tagCoolDown = 0;
             setColor(team.getColor());
@@ -327,7 +275,8 @@ public abstract class Player extends Actor {
      */
     public final void removeSelfFromGrid() {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
-        if (callingClass.equals("ctf.CtfWorld")) super.removeSelfFromGrid();
+        if (callingClass.equals("ctf.CtfWorld"))
+            super.removeSelfFromGrid();
         else {
             CTFWorld.addExtraText("Cheat");
             System.err.println(callingClass + " has cheated and tried to remove a player from the grid");
@@ -340,9 +289,9 @@ public abstract class Player extends Actor {
     }
 
     /**
-     * determines whether a Player is carrying the Flag
+     * determines whether or not a Player is carrying the Flag
      *
-     * @return whether this Player is carrying the Flag
+     * @return whether or not this Player is carrying the Flag
      */
     public final boolean hasFlag() {
         return hasFlag;
@@ -396,7 +345,8 @@ public abstract class Player extends Actor {
      */
     public final void moveTo(Location loc) {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
-        if (callingClass.equals("ctf.Player")) super.moveTo(loc);
+        if (callingClass.equals("ctf.Player"))
+            super.moveTo(loc);
         else {
             CTFWorld.addExtraText("Cheat");
             System.err.println(callingClass + " has attempted an unauthorized moveTo");
@@ -405,10 +355,9 @@ public abstract class Player extends Actor {
 
     /**
      * Returns the number of times this Player has been tagged
-     *
      * @return tag count
      */
-    public int getTagCount() {
+    public int getTagCount () {
         return this.tagCount;
     }
 
