@@ -42,8 +42,10 @@ public class BasePlayer extends ctf.Player {
 
                 Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc));
 
-                return getGrid().get(adjacentLocation) instanceof Rock
-                        ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()))
+                int size = getGrid().getEmptyAdjacentLocations(getLocation()).size();
+
+                return getGrid().get(adjacentLocation) instanceof Rock && size > 0
+                        ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * size))
                         : loc;
             }
         }

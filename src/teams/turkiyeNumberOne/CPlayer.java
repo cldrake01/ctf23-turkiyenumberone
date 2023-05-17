@@ -12,12 +12,12 @@ public class CPlayer extends BasePlayer {
     @Override
     public Location getMoveLocation() {
         if (getOtherTeam().getFlag().beingCarried())
-            return bounce(evade() != null ? evade() : getMyTeam().getFlag().getLocation());
+            return evade() != null ? evade() : getMyTeam().getFlag().getLocation();
         else if (searchSurroundings() != null)
-            return bounce(searchSurroundings());
+            return searchSurroundings();
         else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation()))) instanceof Player)
-            return bounce(getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())));
+            return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         else
-            return bounce(getOtherTeam().getFlag().getLocation());
+            return getOtherTeam().getFlag().getLocation();
     }
 }

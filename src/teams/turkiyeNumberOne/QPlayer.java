@@ -11,8 +11,8 @@ public class QPlayer extends BasePlayer {
     @Override
     public Location getMoveLocation() {
         if (getMyTeam().getFlag().beingCarried())
-            return bounce(getTeam().getFlag().getLocation());
+            return getTeam().getFlag().getLocation();
         else
-            return bounce(intruderSearch() != null ? intruderSearch() : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())));
+            return intruderSearch() != null ? intruderSearch() : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
     }
 }
