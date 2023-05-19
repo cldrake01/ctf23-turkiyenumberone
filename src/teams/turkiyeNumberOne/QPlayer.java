@@ -13,7 +13,7 @@ public class QPlayer extends BasePlayer {
         if (getMyTeam().getFlag().beingCarried())
             return getTeam().getFlag().getLocation();
         else
-            return bounce(intruderSearch() != null ?
+            return locBounce(intruderSearch() != null ?
                     intruderSearch() :
                     getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())));
     }

@@ -14,10 +14,10 @@ public class CPlayer extends BasePlayer {
         if (getOtherTeam().getFlag().beingCarried())
             return evade() != null ? evade() : getMyTeam().getFlag().getLocation();
         else if (searchSurroundings() != null)
-            return bounce(searchSurroundings());
+            return locBounce(searchSurroundings());
         else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation()))) instanceof Player)
-            return bounce(getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())));
+            return locBounce(getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())));
         else
-            return bounce(getOtherTeam().getFlag().getLocation());
+            return locBounce(getOtherTeam().getFlag().getLocation());
     }
 }
