@@ -6,6 +6,7 @@ import ctf.Team;
 
 import info.gridworld.grid.Location;
 
+import java.awt.Transparency;
 public class TurkiyeNumberOne extends Team {
 
     public TurkiyeNumberOne() {

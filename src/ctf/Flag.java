@@ -3,6 +3,7 @@ package ctf;
 import info.gridworld.actor.Actor;
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
+import java.awt.Transparency;
 
 /**
  * Special Actor that acts as the Flag in a CTF Game.  If placed in the Grid, it is available

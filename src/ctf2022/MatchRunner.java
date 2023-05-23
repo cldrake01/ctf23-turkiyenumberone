@@ -1,7 +1,7 @@
 package ctf2022;
 
 import ctf2022.sampleTeam.SampleTeam;
-
+import java.awt.Transparency;
 import java.awt.*;
 
 public class MatchRunner {

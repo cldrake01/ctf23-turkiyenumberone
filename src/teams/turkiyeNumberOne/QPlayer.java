@@ -1,7 +1,7 @@
 package teams.turkiyeNumberOne;
 
 import info.gridworld.grid.Location;
-
+import java.awt.Transparency;
 public class QPlayer extends BasePlayer {
 
     public QPlayer(Location startLocation) {

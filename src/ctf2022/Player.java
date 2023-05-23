@@ -4,7 +4,7 @@ import info.gridworld.actor.Actor;
 import info.gridworld.actor.Rock;
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
-
+import java.awt.Transparency;
 import java.awt.*;
 import java.util.Collections;
 import java.util.List;

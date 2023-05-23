@@ -2,7 +2,7 @@ package teams.turkiyeNumberOne;
 
 import ctf.Player;
 import info.gridworld.grid.Location;
-
+import java.awt.Transparency;
 public class CPlayer extends BasePlayer {
 
     public CPlayer(Location startLocation) {
