@@ -102,9 +102,8 @@ public class BasePlayer extends ctf.Player {
     public final boolean nearFlagEnhanced(Location loc) {
         if (getMyTeam().getFlag() == null || getMyTeam().getFlag().getLocation() == null) return false;
         Location fLoc = getMyTeam().getFlag().getLocation();
-
+        System.out.println("Row: " + Math.abs(loc.getRow() - fLoc.getRow()) + " Col: " + Math.abs(loc.getCol() - fLoc.getCol()));
         return Math.abs(loc.getRow() - fLoc.getRow()) <= 6 && Math.abs(loc.getCol() - fLoc.getCol()) <= 6;
-        //return Math.sqrt(Math.pow(loc.getRow() - flag.getLocation().getRow(), 2) + Math.pow(loc.getCol() - flag.getLocation().getCol(), 2)) <= 4;
     }
 
     /**
@@ -113,15 +112,15 @@ public class BasePlayer extends ctf.Player {
      * @return a location in the opposite direction of the flag.
      */
     public Location locBounce(Location loc) {
-        if (nearFlagEnhanced(loc)) {
+        if (nearFlagEnhanced(loc) && loc != null) {
             if (getMyTeam().getFlag().getLocation().getRow() >= loc.getRow()) {
-                Location northAdjacentLocation = loc.getAdjacentLocation(Location.NORTH);
-                return getGrid().get(northAdjacentLocation) instanceof Rock
+                Location northAdjacentLocation = getLocation().getAdjacentLocation(Location.NORTH);
+                return getGrid().get(northAdjacentLocation) != null
                         ? getGrid().getEmptyAdjacentLocations(northAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(northAdjacentLocation).size()))
                         : northAdjacentLocation;
             } else {
-                Location southAdjacentLocation = loc.getAdjacentLocation(Location.SOUTH);
-                return getGrid().get(southAdjacentLocation) instanceof Rock
+                Location southAdjacentLocation = getLocation().getAdjacentLocation(Location.SOUTH);
+                return getGrid().get(southAdjacentLocation) != null
                         ? getGrid().getEmptyAdjacentLocations(southAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(southAdjacentLocation).size()))
                         : southAdjacentLocation;
             }

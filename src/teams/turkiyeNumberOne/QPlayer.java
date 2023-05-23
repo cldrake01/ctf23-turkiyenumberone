@@ -15,6 +15,7 @@ public class QPlayer extends BasePlayer {
         else
             return locBounce(intruderSearch() != null ?
                     intruderSearch() :
-                    getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())));
+                    getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()))
+            );
     }
 }
