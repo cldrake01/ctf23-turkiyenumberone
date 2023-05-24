@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class BasePlayer extends ctf.Player {
 
-    public static ArrayList<Player> ENEMYPLAYERS = new ArrayList<>();
+    Location lastLocation = null;
 
     /**
      * Constructs a new Player with its desired starting Location
@@ -28,10 +28,26 @@ public class BasePlayer extends ctf.Player {
      * if the player does not have the flag.
      */
     public Location evade() {
-        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            return loc.getRow() >= getLocation().getRow()
-                    ? getLocation().getAdjacentLocation(Location.NORTH)
-                    : getLocation().getAdjacentLocation(Location.SOUTH);
+        Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()));
+
+        int size = getGrid().getEmptyAdjacentLocations(adjacentLocation).size();
+
+        if (getGrid().get(adjacentLocation) instanceof Rock && size > 0)
+            return getGrid().getEmptyAdjacentLocations(adjacentLocation).get((int) (Math.random() * size));
+
+        for (Location loc : getGrid().getOccupiedAdjacentLocations(adjacentLocation))
+            if (getGrid().get(loc) instanceof Player && getGrid().get(loc) != this && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam())) {
+                boolean isHigherOnGrid = loc.getRow() <= getLocation().getRow();
+
+                System.out.println("loc: " + loc.getRow() + " getLoc: " + getLocation().getRow());
+
+                System.out.println(getGrid().get(loc) + " isHigherOnGrid: " + isHigherOnGrid);
+
+                return isHigherOnGrid
+                        ? getLocation().getAdjacentLocation(Location.NORTH)
+                        : getLocation().getAdjacentLocation(Location.SOUTH);
+            }
+
         return null;
     }
 
@@ -41,7 +57,7 @@ public class BasePlayer extends ctf.Player {
      * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
      */
     public Location intruderSearch() {
-        for (Location loc : getGrid().getOccupiedLocations()) {
+        for (Location loc : getGrid().getOccupiedLocations())
             if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc)) {
 
                 Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc));
@@ -52,7 +68,7 @@ public class BasePlayer extends ctf.Player {
                         ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * size))
                         : loc;
             }
-        }
+
         return null;
     }
 
@@ -70,8 +86,6 @@ public class BasePlayer extends ctf.Player {
             return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
         else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
             return loc;
-        else if (!getMyTeam().onSide(getLocation()) && getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()))
-            return loc.getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
         else
             return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
@@ -102,7 +116,7 @@ public class BasePlayer extends ctf.Player {
     public final boolean nearFlagEnhanced(Location loc) {
         if (getMyTeam().getFlag() == null || getMyTeam().getFlag().getLocation() == null) return false;
         Location fLoc = getMyTeam().getFlag().getLocation();
-        System.out.println("Row: " + Math.abs(loc.getRow() - fLoc.getRow()) + " Col: " + Math.abs(loc.getCol() - fLoc.getCol()));
+//        System.out.println("Row: " + Math.abs(loc.getRow() - fLoc.getRow()) + " Col: " + Math.abs(loc.getCol() - fLoc.getCol()));
         return Math.abs(loc.getRow() - fLoc.getRow()) <= 6 && Math.abs(loc.getCol() - fLoc.getCol()) <= 6;
     }
 
