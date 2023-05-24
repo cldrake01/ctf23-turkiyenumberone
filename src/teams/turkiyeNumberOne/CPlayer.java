@@ -3,7 +3,7 @@ package teams.turkiyeNumberOne;
 import ctf.Player;
 import info.gridworld.actor.Rock;
 import info.gridworld.grid.Location;
-import java.awt.Transparency;
+
 public class CPlayer extends BasePlayer {
 
     public CPlayer(Location startLocation) {
@@ -21,10 +21,11 @@ public class CPlayer extends BasePlayer {
                     : home
             );
         else if (searchSurroundings() != null)
-            return locBounce(searchSurroundings());
+            return searchSurroundings();
         else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation()))) instanceof Player)
-            return locBounce(getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size())));
-        else
-            return locBounce(getOtherTeam().getFlag().getLocation());
+            return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+        else {
+            return newBounce() != null ? newBounce() : getOtherTeam().getFlag().getLocation();
+        }
     }
 }

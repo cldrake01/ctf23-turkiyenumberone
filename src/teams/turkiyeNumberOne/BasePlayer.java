@@ -36,7 +36,7 @@ public class BasePlayer extends ctf.Player {
             return getGrid().getEmptyAdjacentLocations(adjacentLocation).get((int) (Math.random() * size));
 
         for (Location loc : getGrid().getOccupiedAdjacentLocations(adjacentLocation))
-            if (getGrid().get(loc) instanceof Player && getGrid().get(loc) != this && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam())) {
+            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam())) {
                 boolean isHigherOnGrid = loc.getRow() <= getLocation().getRow();
 
                 System.out.println("loc: " + loc.getRow() + " getLoc: " + getLocation().getRow());
@@ -102,44 +102,42 @@ public class BasePlayer extends ctf.Player {
         return null;
     }
 
-    @Override
-    public Location getMoveLocation() {
-        return null;
-    }
-
-    /**
-     * Determines whether a Location is within 4 spaces of this Player's Flag
-     *
-     * @param loc the Location to be tested
-     * @return whether the Location is within 4 spaces of this Player's Flag
-     */
-    public final boolean nearFlagEnhanced(Location loc) {
-        if (getMyTeam().getFlag() == null || getMyTeam().getFlag().getLocation() == null) return false;
-        Location fLoc = getMyTeam().getFlag().getLocation();
-//        System.out.println("Row: " + Math.abs(loc.getRow() - fLoc.getRow()) + " Col: " + Math.abs(loc.getCol() - fLoc.getCol()));
-        return Math.abs(loc.getRow() - fLoc.getRow()) <= 6 && Math.abs(loc.getCol() - fLoc.getCol()) <= 6;
-    }
-
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
      *
      * @return a location in the opposite direction of the flag.
      */
-    public Location locBounce(Location loc) {
-        if (nearFlagEnhanced(loc) && loc != null) {
-            if (getMyTeam().getFlag().getLocation().getRow() >= loc.getRow()) {
-                Location northAdjacentLocation = getLocation().getAdjacentLocation(Location.NORTH);
-                return getGrid().get(northAdjacentLocation) != null
-                        ? getGrid().getEmptyAdjacentLocations(northAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(northAdjacentLocation).size()))
-                        : northAdjacentLocation;
-            } else {
-                Location southAdjacentLocation = getLocation().getAdjacentLocation(Location.SOUTH);
-                return getGrid().get(southAdjacentLocation) != null
-                        ? getGrid().getEmptyAdjacentLocations(southAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(southAdjacentLocation).size()))
-                        : southAdjacentLocation;
-            }
-        } else {
-            return loc;
-        }
+    public Location newBounce() {
+
+        Location northAdjacentLocation = getLocation().getAdjacentLocation(Location.NORTH);
+        Location southAdjacentLocation = getLocation().getAdjacentLocation(Location.SOUTH);
+
+        if (getMyTeam().nearFlag(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()))))
+            return (getMyTeam().getFlag().getLocation().getRow() >= getLocation().getRow())
+                    ?
+                    (
+                            getGrid().get(northAdjacentLocation) instanceof Rock
+                                    ? getGrid().getEmptyAdjacentLocations(northAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(northAdjacentLocation).size()))
+                                    : northAdjacentLocation
+                    )
+                    :
+                    (
+                            getGrid().get(southAdjacentLocation) instanceof Rock
+                                    ? getGrid().getEmptyAdjacentLocations(southAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(southAdjacentLocation).size()))
+                                    : southAdjacentLocation
+                    );
+        else
+            return null;
+    }
+
+
+    /**
+     * This method is never called.
+     *
+     * @return
+     */
+    @Override
+    public Location getMoveLocation() {
+        return null;
     }
 }

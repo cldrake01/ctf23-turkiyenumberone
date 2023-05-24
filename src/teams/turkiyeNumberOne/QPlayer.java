@@ -1,7 +1,8 @@
 package teams.turkiyeNumberOne;
 
+import info.gridworld.actor.Rock;
 import info.gridworld.grid.Location;
-import java.awt.Transparency;
+
 public class QPlayer extends BasePlayer {
 
     public QPlayer(Location startLocation) {
@@ -10,12 +11,17 @@ public class QPlayer extends BasePlayer {
 
     @Override
     public Location getMoveLocation() {
-        if (getMyTeam().getFlag().beingCarried())
-            return getTeam().getFlag().getLocation();
-        else
-            return locBounce(intruderSearch() != null ?
-                    intruderSearch() :
-                    getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()))
-            );
+        if (getMyTeam().getFlag().beingCarried()) {
+            Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()));
+
+            int size = getGrid().getEmptyAdjacentLocations(adjacentLocation).size();
+
+            if (getGrid().get(adjacentLocation) instanceof Rock && size > 0)
+                return getGrid().getEmptyAdjacentLocations(adjacentLocation).get((int) (Math.random() * size));
+        }
+
+        return intruderSearch() != null ?
+                intruderSearch() :
+                getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
     }
 }
