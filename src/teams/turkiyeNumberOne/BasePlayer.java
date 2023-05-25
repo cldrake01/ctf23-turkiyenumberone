@@ -42,51 +42,54 @@ public class BasePlayer extends ctf.Player {
 
     public Location juke(Location loc) {
         if (getGrid().get(loc) instanceof Player) {
-            switch (getLocation().getDirectionToward(loc)) {
-                case Location.NORTH -> {
-                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTH))
-                            ? getLocation().getAdjacentLocation(Location.SOUTH)
-                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-                }
-                case Location.NORTHEAST -> {
-                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTHWEST))
-                            ? getLocation().getAdjacentLocation(Location.SOUTHWEST)
-                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-                }
-                case Location.NORTHWEST -> {
-                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTHEAST))
-                            ? getLocation().getAdjacentLocation(Location.SOUTHEAST)
-                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-                }
-                case Location.SOUTH -> {
-                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTH))
-                            ? getLocation().getAdjacentLocation(Location.NORTH)
-                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-                }
-                case Location.SOUTHEAST -> {
-                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTHWEST))
-                            ? getLocation().getAdjacentLocation(Location.NORTHWEST)
-                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-                }
-                case Location.SOUTHWEST -> {
-                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTHEAST))
-                            ? getLocation().getAdjacentLocation(Location.NORTHEAST)
-                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-                }
-                case Location.EAST -> {
-                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.WEST))
-                            ? getLocation().getAdjacentLocation(Location.WEST)
-                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-                }
-                case Location.WEST -> {
-                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.EAST))
-                            ? getLocation().getAdjacentLocation(Location.EAST)
-                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-                }
-                default -> {
-                    return null;
-                }
-            }
+            return loc.getRow() >= getLocation().getRow()
+                    ? getLocation().getAdjacentLocation(Location.NORTH)
+                    : getLocation().getAdjacentLocation(Location.SOUTH);
+//            switch (getLocation().getDirectionToward(loc)) {
+//                case Location.NORTH -> {
+//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTH))
+//                            ? getLocation().getAdjacentLocation(Location.SOUTH)
+//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+//                }
+//                case Location.NORTHEAST -> {
+//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTHWEST))
+//                            ? getLocation().getAdjacentLocation(Location.SOUTHWEST)
+//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+//                }
+//                case Location.NORTHWEST -> {
+//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTHEAST))
+//                            ? getLocation().getAdjacentLocation(Location.SOUTHEAST)
+//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+//                }
+//                case Location.SOUTH -> {
+//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTH))
+//                            ? getLocation().getAdjacentLocation(Location.NORTH)
+//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+//                }
+//                case Location.SOUTHEAST -> {
+//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTHWEST))
+//                            ? getLocation().getAdjacentLocation(Location.NORTHWEST)
+//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+//                }
+//                case Location.SOUTHWEST -> {
+//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTHEAST))
+//                            ? getLocation().getAdjacentLocation(Location.NORTHEAST)
+//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+//                }
+//                case Location.EAST -> {
+//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.WEST))
+//                            ? getLocation().getAdjacentLocation(Location.WEST)
+//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+//                }
+//                case Location.WEST -> {
+//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.EAST))
+//                            ? getLocation().getAdjacentLocation(Location.EAST)
+//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+//                }
+//                default -> {
+//                    return null;
+//                }
+//            }
         } else {
             return null;
         }
