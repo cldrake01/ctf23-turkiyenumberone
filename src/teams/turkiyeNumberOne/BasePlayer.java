@@ -1,5 +1,4 @@
 package teams.turkiyeNumberOne;
-import ctf.CTFWorld;
 import ctf.Flag;
 import ctf.Player;
 import info.gridworld.actor.Rock;

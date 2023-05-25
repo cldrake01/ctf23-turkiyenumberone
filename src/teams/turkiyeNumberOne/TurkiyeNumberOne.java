@@ -2,7 +2,6 @@ package teams.turkiyeNumberOne;
 import java.awt.Color;
 import ctf.Team;
 import info.gridworld.grid.Location;
-import java.awt.Transparency;
 public class TurkiyeNumberOne extends Team {
     public TurkiyeNumberOne() {
         super(Color.RED);

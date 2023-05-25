@@ -6,7 +6,6 @@ import info.gridworld.actor.Rock;
 import info.gridworld.grid.BoundedGrid;
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
-import java.awt.Transparency;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;

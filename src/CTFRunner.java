@@ -3,10 +3,7 @@ import ctf.CTFWorld;
 import ctf.Team;
 import teams.blueSampleTeam.BlueSampleTeam;
 import teams.turkiyeNumberOne.TurkiyeNumberOne;
-
 import javax.swing.*;
-import java.awt.*;
-
 public class CTFRunner {
     public static void main(String[] args) throws InterruptedException {
 //        Uncomment this to prevent any output from being printed to the console (speeds up performance)
