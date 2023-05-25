@@ -12,10 +12,8 @@ public class QPlayer extends BasePlayer {
         if (getMyTeam().getFlag().beingCarried()) {
             Location flagLocation = getMyTeam().getFlag().getLocation();
             Location towardsFlag = getLocation().getAdjacentLocation(getLocation().getDirectionToward(flagLocation));
-
             ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(towardsFlag);
             int numEmptyLocations = emptyAdjacentLocations.size();
-
             if (getGrid().get(towardsFlag) instanceof Rock && numEmptyLocations > 0) {
                 Random random = new Random();
                 int randomIndex = random.nextInt(numEmptyLocations);
