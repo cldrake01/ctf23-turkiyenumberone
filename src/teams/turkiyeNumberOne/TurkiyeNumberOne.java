@@ -2,6 +2,8 @@ package teams.turkiyeNumberOne;
 import java.awt.Color;
 import ctf.Team;
 import info.gridworld.grid.Location;
+// Quentin made QPlayer with their associated methods, icons, and formatting
+// Collin made CPlayer with their associated methods, strategy and structure
 public class TurkiyeNumberOne extends Team {
     public TurkiyeNumberOne() {
         super(Color.RED);
