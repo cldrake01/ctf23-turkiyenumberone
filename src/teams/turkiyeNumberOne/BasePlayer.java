@@ -9,9 +9,7 @@ import info.gridworld.grid.Location;
 import java.util.ArrayList;
 
 public class BasePlayer extends ctf.Player {
-
     Location lastLocation = null;
-
     /**
      * Constructs a new Player with its desired starting Location
      *
@@ -20,7 +18,6 @@ public class BasePlayer extends ctf.Player {
     public BasePlayer(Location startLocation) {
         super(startLocation);
     }
-
     /**
      * Attempts to evade other players by moving in the opposite direction of the enemy flag.
      *
@@ -29,50 +26,67 @@ public class BasePlayer extends ctf.Player {
      */
     public Location evade() {
         Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()));
-
         int size = getGrid().getEmptyAdjacentLocations(adjacentLocation).size();
-
         if (getGrid().get(adjacentLocation) instanceof Rock && size > 0)
             return getGrid().getEmptyAdjacentLocations(adjacentLocation).get((int) (Math.random() * size));
-
         for (Location loc : getGrid().getOccupiedAdjacentLocations(adjacentLocation))
             if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam())) {
                 boolean isHigherOnGrid = loc.getRow() <= getLocation().getRow();
-
                 System.out.println("loc: " + loc.getRow() + " getLoc: " + getLocation().getRow());
-
                 System.out.println(getGrid().get(loc) + " isHigherOnGrid: " + isHigherOnGrid);
-
                 return isHigherOnGrid
                         ? getLocation().getAdjacentLocation(Location.NORTH)
                         : getLocation().getAdjacentLocation(Location.SOUTH);
             }
-
         return null;
     }
-
     /**
      * Searches for enemy players on the grid and returns the location of the first enemy player found.
      *
      * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
      */
     public Location intruderSearch() {
-        for (Location loc : getGrid().getOccupiedLocations())
-            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc)) {
-
-                Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc));
-
-                int size = getGrid().getEmptyAdjacentLocations(getLocation()).size();
-
-                return getGrid().get(adjacentLocation) instanceof Rock && size > 0
-                        ? getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * size))
-                        : loc;
+        // Search for enemy players on the grid
+        ArrayList<Location> occupiedLocations = getGrid().getOccupiedLocations();
+        for (Location loc : occupiedLocations) {
+            if (isEnemyPlayerOnGrid(loc)) {
+                // Determine the objective location for the enemy player
+                Location objectiveLocation = getObjectiveLocation(loc);
+                if (objectiveLocation != null) {
+                    return objectiveLocation;
+                }
             }
-
+        }
         return null;
     }
+    /**
+     * Checks if the given location contains an enemy player based on certain conditions.
+     *
+     * @param loc The location to check
+     * @return True if the location contains an enemy player, false otherwise.
+     */
+    private boolean isEnemyPlayerOnGrid(Location loc) {
+        return getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc);
+    }
+    /**
+     * Determines the objective location based on the enemy player's location.
+     *
+     * @param loc The location of the enemy player
+     * @return The objective location, which could be an empty adjacent location or the enemy player's location itself.
+     */
+    private Location getObjectiveLocation(Location loc) {
+        Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc));
+        ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(getLocation());
 
-
+        if (getGrid().get(adjacentLocation) instanceof Rock && !emptyAdjacentLocations.isEmpty()) {
+            // Randomly select an empty adjacent location
+            int randomIndex = (int) (Math.random() * emptyAdjacentLocations.size());
+            return emptyAdjacentLocations.get(randomIndex);
+        } else {
+            // Return the enemy player's location
+            return loc;
+        }
+    }
     /**
      * Returns the objective location of the player based on the given location.
      *
@@ -89,7 +103,6 @@ public class BasePlayer extends ctf.Player {
         else
             return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
-
     /**
      * Searches for the immediate objective location in the surrounding locations of the current location.
      *
@@ -101,17 +114,14 @@ public class BasePlayer extends ctf.Player {
             if (getImmediateObjectiveLocation(loc) != null) return getImmediateObjectiveLocation(loc);
         return null;
     }
-
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
      *
      * @return a location in the opposite direction of the flag.
      */
     public Location newBounce() {
-
         Location northAdjacentLocation = getLocation().getAdjacentLocation(Location.NORTH);
         Location southAdjacentLocation = getLocation().getAdjacentLocation(Location.SOUTH);
-
         if (getMyTeam().nearFlag(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()))))
             return (getMyTeam().getFlag().getLocation().getRow() >= getLocation().getRow())
                     ?
@@ -129,8 +139,6 @@ public class BasePlayer extends ctf.Player {
         else
             return null;
     }
-
-
     /**
      * This method is never called.
      *
