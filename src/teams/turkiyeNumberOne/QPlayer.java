@@ -4,9 +4,17 @@ import info.gridworld.grid.Location;
 import java.util.ArrayList;
 import java.util.Random;
 public class QPlayer extends BasePlayer {
+    /**
+     * Constructs a new QPlayer with the specified starting location.
+     * @param startLocation the starting location of the QPlayer
+     */
     public QPlayer(Location startLocation) {
         super(startLocation);
     }
+    /**
+     * Determines the next move location for the QPlayer.
+     * @return the next move location
+     */
     @Override
     public Location getMoveLocation() {
         if (getMyTeam().getFlag().beingCarried()) {
@@ -14,6 +22,7 @@ public class QPlayer extends BasePlayer {
             Location towardsFlag = getLocation().getAdjacentLocation(getLocation().getDirectionToward(flagLocation));
             ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(towardsFlag);
             int numEmptyLocations = emptyAdjacentLocations.size();
+
             if (getGrid().get(towardsFlag) instanceof Rock && numEmptyLocations > 0) {
                 Random random = new Random();
                 int randomIndex = random.nextInt(numEmptyLocations);
