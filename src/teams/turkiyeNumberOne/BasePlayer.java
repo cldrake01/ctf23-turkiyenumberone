@@ -1,13 +1,17 @@
 package teams.turkiyeNumberOne;
+
 import ctf.Flag;
 import ctf.Player;
 import info.gridworld.actor.Rock;
 import info.gridworld.grid.Location;
+
 import java.util.ArrayList;
+
 public class BasePlayer extends ctf.Player {
 
     /**
      * Constructs a new Player with its desired starting Location
+     *
      * @param startLocation the desired starting Location
      */
     public BasePlayer(Location startLocation) {
@@ -16,6 +20,7 @@ public class BasePlayer extends ctf.Player {
 
     /**
      * Attempts to evade other players by moving in the opposite direction of the enemy flag.
+     *
      * @return The location of the player after the evasion, or null if there are no adjacent enemy players or
      * if the player does not have the flag.
      */
@@ -30,27 +35,80 @@ public class BasePlayer extends ctf.Player {
         }
         for (Location loc : getGrid().getOccupiedAdjacentLocations(adjacentLocation))
             if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam())) {
-                boolean isHigherOnGrid = loc.getRow() <= getLocation().getRow();
-                return isHigherOnGrid
-                        ? getLocation().getAdjacentLocation(Location.NORTH)
-                        : getLocation().getAdjacentLocation(Location.SOUTH);
+                juke(loc);
             }
         return null;
     }
 
+    public Location juke(Location loc) {
+        if (getGrid().get(loc) instanceof Player) {
+            System.out.println("\ncase: " + getLocation().getDirectionToward(loc) + "\n");
+            switch (getLocation().getDirectionToward(loc)) {
+                case Location.NORTH -> {
+                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTH))
+                            ? getLocation().getAdjacentLocation(Location.SOUTH)
+                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                }
+                case Location.NORTHEAST -> {
+                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTHWEST))
+                            ? getLocation().getAdjacentLocation(Location.SOUTHWEST)
+                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                }
+                case Location.NORTHWEST -> {
+                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTHEAST))
+                            ? getLocation().getAdjacentLocation(Location.SOUTHEAST)
+                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                }
+                case Location.SOUTH -> {
+                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTH))
+                            ? getLocation().getAdjacentLocation(Location.NORTH)
+                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                }
+                case Location.SOUTHEAST -> {
+                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTHWEST))
+                            ? getLocation().getAdjacentLocation(Location.NORTHWEST)
+                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                }
+                case Location.SOUTHWEST -> {
+                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTHEAST))
+                            ? getLocation().getAdjacentLocation(Location.NORTHEAST)
+                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                }
+                case Location.EAST -> {
+                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.WEST))
+                            ? getLocation().getAdjacentLocation(Location.WEST)
+                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                }
+                case Location.WEST -> {
+                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.EAST))
+                            ? getLocation().getAdjacentLocation(Location.EAST)
+                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+                }
+                default -> {
+                    return null;
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Searches for enemy players on the grid and returns the location of the first enemy player found.
+     *
      * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
      */
     public Location intruderSearch() {
-        // Search for enemy players on the grid
-        ArrayList<Location> occupiedLocations = getGrid().getOccupiedLocations();
-        for (Location loc : occupiedLocations) {
-            if (isEnemyPlayerOnGrid(loc)) {
-                // Determine the objective location for the enemy player
-                Location objectiveLocation = getObjectiveLocation(loc);
-                if (objectiveLocation != null) {
-                    return objectiveLocation;
+        if (getMyTeam().onSide(getLocation())) {
+            // Search for enemy players on the grid
+            ArrayList<Location> occupiedLocations = getGrid().getOccupiedLocations();
+            for (Location loc : occupiedLocations) {
+                if (isEnemyPlayerOnGrid(loc)) {
+                    // Determine the objective location for the enemy player
+                    Location objectiveLocation = getObjectiveLocation(loc);
+                    if (objectiveLocation != null) {
+                        return objectiveLocation;
+                    }
                 }
             }
         }
@@ -59,6 +117,7 @@ public class BasePlayer extends ctf.Player {
 
     /**
      * Checks if the given location contains an enemy player based on certain conditions.
+     *
      * @param loc The location to check
      * @return True if the location contains an enemy player, false otherwise.
      */
@@ -68,6 +127,7 @@ public class BasePlayer extends ctf.Player {
 
     /**
      * Determines the objective location based on the enemy player's location.
+     *
      * @param loc The location of the enemy player
      * @return The objective location, which could be an empty adjacent location or the enemy player's location itself.
      */
@@ -86,6 +146,7 @@ public class BasePlayer extends ctf.Player {
 
     /**
      * Returns the objective location of the player based on the given location.
+     *
      * @param loc The location of the player.
      * @return The objective location of the player, or null if the location is not a valid objective location.
      */
@@ -102,6 +163,7 @@ public class BasePlayer extends ctf.Player {
 
     /**
      * Searches for the immediate objective location in the surrounding locations of the current location.
+     *
      * @return the immediate objective location if found, otherwise null.
      * The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
      */
@@ -113,6 +175,7 @@ public class BasePlayer extends ctf.Player {
 
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
+     *
      * @return a location in the opposite direction of the flag.
      */
     public Location newBounce() {
@@ -138,6 +201,7 @@ public class BasePlayer extends ctf.Player {
 
     /**
      * This method is never called.
+     *
      * @return
      */
     @Override
