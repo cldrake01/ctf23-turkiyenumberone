@@ -8,7 +8,9 @@ public class CPlayer extends BasePlayer {
     @Override
     public Location getMoveLocation() {
         Location home = new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol());
-        if (this.hasFlag())
+        if (intruderSearch() != null)
+            return intruderSearch();
+        else if (this.hasFlag())
             return evade() != null ? evade() : home;
         else if (searchSurroundings() != null)
             return searchSurroundings();
