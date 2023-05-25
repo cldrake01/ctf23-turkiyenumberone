@@ -1,17 +1,11 @@
 package teams.turkiyeNumberOne;
-
 import java.awt.Color;
-
 import ctf.Team;
-
 import info.gridworld.grid.Location;
-
 import java.awt.Transparency;
 public class TurkiyeNumberOne extends Team {
-
     public TurkiyeNumberOne() {
         super(Color.RED);
-
         super.addPlayer(new CPlayer(new Location(5 + (int)(Math.random()*3 - 1), 49)));
         super.addPlayer(new QPlayer(new Location(10 + (int)(Math.random()*3 - 1), 30)));
         super.addPlayer(new CPlayer(new Location(15 + (int)(Math.random()*3 - 1), 49)));

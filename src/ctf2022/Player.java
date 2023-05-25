@@ -10,26 +10,21 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class Player extends Actor {
-
     // point values for different actions
     private static final int MOVE = 1;
     private static final int MOVE_ON_OPPONENT_SIDE = 2;
     private static final int CAPTURE = 50;
     private static final int TAG = 20;
     private static final int CARRY = 5;
-
     // The time the whole team has, in milliseconds. Each player is individually capped on time, not the team
     private static final int TURN_TIME = 500;
-
     private Team team;
     private boolean hasFlag;
     private Location startLocation;
     private int tagCoolDown;
-
     public Player(Location startLocation) {
         this.startLocation = startLocation;
     }
-
     public final void act() {
         try {
             if (team.hasWon() || team.getOpposingTeam().hasWon()) {
@@ -37,14 +32,12 @@ public abstract class Player extends Actor {
                 else setColor(Color.YELLOW);
                 return;
             }
-
             if (tagCoolDown > 0) {
                 setColor(Color.BLACK);
                 tagCoolDown--;
                 if (tagCoolDown == 0) setColor(team.getColor());
             } else {
                 processNeighbors();
-
                 Location loc = new Location(-1, -1);
                 Thread getMoveLocationThread = new Thread(() -> {
                     Location l = getMoveLocation();
@@ -66,7 +59,6 @@ public abstract class Player extends Actor {
                     System.out.println("Player ran out of time: " + this);
                     CtfWorld.extra += " Time";
                 }
-
                 makeMove(!this.getGrid().isValid(loc) ? null : loc); // null = don't move
             }
         } catch (Exception e) {
@@ -75,7 +67,6 @@ public abstract class Player extends Actor {
             e.printStackTrace();
         }
     }
-
     private void processNeighbors() {
         List<Location> neighborLocations = getGrid().getOccupiedAdjacentLocations(getLocation());
         for (int i = neighborLocations.size() - 1; i >= 0; i--) {
@@ -105,14 +96,11 @@ public abstract class Player extends Actor {
             }
         }
     }
-
     private void makeMove(Location loc) {
         // if null, treat as if you are staying in same location
         if (loc == null) loc = getLocation();
-
         // limit to one step towards desired location
         if (!loc.equals(getLocation())) loc = getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc));
-
         // Player is too close to own flag and not moving away from it, it must bounce
         if (team.onSide(getLocation()) && getGrid().get(team.getFlag().getLocation()) instanceof Flag && team.nearFlag(getLocation()) && team.nearFlag(loc)) {
             loc = bounce();
@@ -123,7 +111,6 @@ public abstract class Player extends Actor {
             CtfWorld.extra += " Close to flag";
             loc = bounce();
         }
-
         // move to loc and score appropriate points
         if (!loc.equals(getLocation()) && getGrid().isValid(loc) && getGrid().get(loc) == null) {
             this.setDirection(getLocation().getDirectionToward(loc));
@@ -134,7 +121,6 @@ public abstract class Player extends Actor {
             if (this.hasFlag) team.addScore(CARRY);
         }
     }
-
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
      *
@@ -143,7 +129,6 @@ public abstract class Player extends Actor {
     private Location bounce() {
         return getMyTeam().getFlag().getLocation().getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
     }
-
     /**
      * Attempts to evade other players by moving in the opposite direction of the enemy flag.
      *
@@ -155,7 +140,6 @@ public abstract class Player extends Actor {
                 return loc.getRow() >= getLocation().getRow() ? getLocation().getAdjacentLocation(Location.NORTH) : getLocation().getAdjacentLocation(Location.SOUTH);
         return null;
     }
-
     /**
      * Searches for enemy players on the grid and returns the location of the first enemy player found.
      *
@@ -167,7 +151,6 @@ public abstract class Player extends Actor {
                 return loc;
         return null;
     }
-
     /**
      * Returns the objective location of the player based on the given location.
      *
@@ -184,7 +167,6 @@ public abstract class Player extends Actor {
         else
             return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
-
     /**
      * Searches for the immediate objective location in the surrounding locations of the current location.
      *
@@ -197,9 +179,7 @@ public abstract class Player extends Actor {
                 return getImmediateObjectiveLocation(loc);
         return null;
     }
-
     public abstract Location getMoveLocation();
-
     private void tag() {
         Location oldLoc = getLocation();
         Location nextLoc;
@@ -213,7 +193,6 @@ public abstract class Player extends Actor {
         }
         setColor(Color.BLACK);
     }
-
     protected final void putSelfInGridProtected(Grid<Actor> grid, Location loc) {
         if (getGrid() != null) super.removeSelfFromGrid();
         hasFlag = false;
@@ -221,7 +200,6 @@ public abstract class Player extends Actor {
         setColor(team.getColor());
         super.putSelfInGrid(grid, loc);
     }
-
     public final void removeSelfFromGrid() {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.endsWith("CtfWorld")) super.removeSelfFromGrid();
@@ -230,40 +208,31 @@ public abstract class Player extends Actor {
             CtfWorld.extra += " Cheat";
         }
     }
-
     protected final void setTeam(Team team) {
         this.team = team;
         setColor(team.getColor());
     }
-
     protected final void setStartLocation(Location startLocation) {
         this.startLocation = startLocation;
     }
-
     public final boolean hasFlag() {
         return hasFlag;
     }
-
     protected final Location getStartLocation() {
         return startLocation;
     }
-
     public final Team getTeam() {
         return team;
     }
-
     public final Team getMyTeam() {
         return team;
     }
-
     public final Team getOtherTeam() {
         return team.getOpposingTeam();
     }
-
     public final Location getLocation() {
         return new Location(super.getLocation().getRow(), super.getLocation().getCol());
     }
-
     public final void moveTo(Location loc) {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.endsWith("Player")) super.moveTo(loc);
@@ -272,7 +241,6 @@ public abstract class Player extends Actor {
             System.out.println("This Player has attempted an unauthorized moveTo");
         }
     }
-
     public String toString() {
         return this.getClass().getName() + " " + this.getTeam().getName();
     }
