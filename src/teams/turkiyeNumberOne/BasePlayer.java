@@ -9,7 +9,6 @@ public class BasePlayer extends ctf.Player {
     Location lastLocation = null;
     /**
      * Constructs a new Player with its desired starting Location
-     *
      * @param startLocation the desired starting Location
      */
     public BasePlayer(Location startLocation) {
@@ -17,7 +16,6 @@ public class BasePlayer extends ctf.Player {
     }
     /**
      * Attempts to evade other players by moving in the opposite direction of the enemy flag.
-     *
      * @return The location of the player after the evasion, or null if there are no adjacent enemy players or
      * if the player does not have the flag.
      */
@@ -39,7 +37,6 @@ public class BasePlayer extends ctf.Player {
     }
     /**
      * Searches for enemy players on the grid and returns the location of the first enemy player found.
-     *
      * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
      */
     public Location intruderSearch() {
@@ -58,7 +55,6 @@ public class BasePlayer extends ctf.Player {
     }
     /**
      * Checks if the given location contains an enemy player based on certain conditions.
-     *
      * @param loc The location to check
      * @return True if the location contains an enemy player, false otherwise.
      */
@@ -67,14 +63,12 @@ public class BasePlayer extends ctf.Player {
     }
     /**
      * Determines the objective location based on the enemy player's location.
-     *
      * @param loc The location of the enemy player
      * @return The objective location, which could be an empty adjacent location or the enemy player's location itself.
      */
     private Location getObjectiveLocation(Location loc) {
         Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc));
         ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(getLocation());
-
         if (getGrid().get(adjacentLocation) instanceof Rock && !emptyAdjacentLocations.isEmpty()) {
             // Randomly select an empty adjacent location
             int randomIndex = (int) (Math.random() * emptyAdjacentLocations.size());
@@ -86,7 +80,6 @@ public class BasePlayer extends ctf.Player {
     }
     /**
      * Returns the objective location of the player based on the given location.
-     *
      * @param loc The location of the player.
      * @return The objective location of the player, or null if the location is not a valid objective location.
      */
@@ -102,7 +95,6 @@ public class BasePlayer extends ctf.Player {
     }
     /**
      * Searches for the immediate objective location in the surrounding locations of the current location.
-     *
      * @return the immediate objective location if found, otherwise null.
      * The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
      */
@@ -113,7 +105,6 @@ public class BasePlayer extends ctf.Player {
     }
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
-     *
      * @return a location in the opposite direction of the flag.
      */
     public Location newBounce() {
@@ -138,7 +129,6 @@ public class BasePlayer extends ctf.Player {
     }
     /**
      * This method is never called.
-     *
      * @return
      */
     @Override

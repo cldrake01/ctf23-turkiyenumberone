@@ -123,7 +123,6 @@ public abstract class Player extends Actor {
     }
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
-     *
      * @return a location in the opposite direction of the flag.
      */
     private Location bounce() {
@@ -131,7 +130,6 @@ public abstract class Player extends Actor {
     }
     /**
      * Attempts to evade other players by moving in the opposite direction of the enemy flag.
-     *
      * @return The location of the player after the evasion, or null if there are no adjacent enemy players or if the player does not have the flag.
      */
     public Location evade() {
@@ -142,7 +140,6 @@ public abstract class Player extends Actor {
     }
     /**
      * Searches for enemy players on the grid and returns the location of the first enemy player found.
-     *
      * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
      */
     public Location intruderSearch() {
@@ -153,7 +150,6 @@ public abstract class Player extends Actor {
     }
     /**
      * Returns the objective location of the player based on the given location.
-     *
      * @param loc The location of the player.
      * @return The objective location of the player, or null if the location is not a valid objective location.
      */
@@ -169,7 +165,6 @@ public abstract class Player extends Actor {
     }
     /**
      * Searches for the immediate objective location in the surrounding locations of the current location.
-     *
      * @return the immediate objective location if found, otherwise null.
      * The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
      */

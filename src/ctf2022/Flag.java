@@ -11,7 +11,6 @@ public class Flag extends Actor {
     private Player carrier;
     /**
      * Creates a new Flag object.
-     *
      * @param team The team that the flag belongs to.
      */
     public Flag(Team team) {
@@ -25,7 +24,6 @@ public class Flag extends Actor {
     }
     /**
      * Allows a player to pick up the flag.
-     *
      * @param player The player that is picking up the flag.
      */
     protected void pickUp(Player player) {
@@ -45,7 +43,6 @@ public class Flag extends Actor {
     }
     /**
      * Returns the team that the flag belongs to.
-     *
      * @return The team that the flag belongs to.
      */
     public Team getTeam() {
@@ -53,7 +50,6 @@ public class Flag extends Actor {
     }
     /**
      * Returns the location of the flag or its carrier.
-     *
      * @return The location of the flag or its carrier.
      */
     public Location getLocation() {
@@ -62,7 +58,6 @@ public class Flag extends Actor {
     }
     /**
      * Returns whether the flag is being carried by a player.
-     *
      * @return Whether the flag is being carried by a player.
      */
     public boolean beingCarried() {
