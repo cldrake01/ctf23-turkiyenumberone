@@ -42,7 +42,6 @@ public class BasePlayer extends ctf.Player {
 
     public Location juke(Location loc) {
         if (getGrid().get(loc) instanceof Player) {
-            System.out.println("\ncase: " + getLocation().getDirectionToward(loc) + "\n");
             switch (getLocation().getDirectionToward(loc)) {
                 case Location.NORTH -> {
                     return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTH))
