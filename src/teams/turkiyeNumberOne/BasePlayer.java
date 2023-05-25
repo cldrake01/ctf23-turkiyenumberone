@@ -6,7 +6,7 @@ import info.gridworld.actor.Rock;
 import info.gridworld.grid.Location;
 import java.util.ArrayList;
 public class BasePlayer extends ctf.Player {
-    Location lastLocation = null;
+
     /**
      * Constructs a new Player with its desired starting Location
      *
@@ -15,6 +15,7 @@ public class BasePlayer extends ctf.Player {
     public BasePlayer(Location startLocation) {
         super(startLocation);
     }
+
     /**
      * Attempts to evade other players by moving in the opposite direction of the enemy flag.
      *
@@ -37,6 +38,7 @@ public class BasePlayer extends ctf.Player {
             }
         return null;
     }
+
     /**
      * Searches for enemy players on the grid and returns the location of the first enemy player found.
      *
@@ -56,6 +58,7 @@ public class BasePlayer extends ctf.Player {
         }
         return null;
     }
+
     /**
      * Checks if the given location contains an enemy player based on certain conditions.
      *
@@ -65,6 +68,7 @@ public class BasePlayer extends ctf.Player {
     private boolean isEnemyPlayerOnGrid(Location loc) {
         return getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc);
     }
+
     /**
      * Determines the objective location based on the enemy player's location.
      *
@@ -84,6 +88,7 @@ public class BasePlayer extends ctf.Player {
             return loc;
         }
     }
+
     /**
      * Returns the objective location of the player based on the given location.
      *
@@ -100,6 +105,7 @@ public class BasePlayer extends ctf.Player {
         else
             return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
+
     /**
      * Searches for the immediate objective location in the surrounding locations of the current location.
      *
@@ -111,6 +117,7 @@ public class BasePlayer extends ctf.Player {
             if (getImmediateObjectiveLocation(loc) != null) return getImmediateObjectiveLocation(loc);
         return null;
     }
+
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
      *
@@ -136,6 +143,7 @@ public class BasePlayer extends ctf.Player {
         else
             return null;
     }
+
     /**
      * This method is never called.
      *
