@@ -5,6 +5,7 @@ import info.gridworld.actor.Rock;
 import info.gridworld.grid.Location;
 import java.util.ArrayList;
 public class BasePlayer extends ctf.Player {
+
     /**
      * Constructs a new Player with its desired starting Location
      * @param startLocation the desired starting Location
@@ -12,6 +13,7 @@ public class BasePlayer extends ctf.Player {
     public BasePlayer(Location startLocation) {
         super(startLocation);
     }
+
     /**
      * Attempts to evade other players by moving in the opposite direction of the enemy flag.
      * @return The location of the player after the evasion, or null if there are no adjacent enemy players or
@@ -35,6 +37,7 @@ public class BasePlayer extends ctf.Player {
             }
         return null;
     }
+
     /**
      * Searches for enemy players on the grid and returns the location of the first enemy player found.
      * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
@@ -80,6 +83,7 @@ public class BasePlayer extends ctf.Player {
             return loc;
         }
     }
+
     /**
      * Returns the objective location of the player based on the given location.
      * @param loc The location of the player.
@@ -95,6 +99,7 @@ public class BasePlayer extends ctf.Player {
         else
             return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
     }
+
     /**
      * Searches for the immediate objective location in the surrounding locations of the current location.
      * @return the immediate objective location if found, otherwise null.
@@ -105,6 +110,7 @@ public class BasePlayer extends ctf.Player {
             if (getImmediateObjectiveLocation(loc) != null) return getImmediateObjectiveLocation(loc);
         return null;
     }
+
     /**
      * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
      * @return a location in the opposite direction of the flag.
@@ -129,6 +135,7 @@ public class BasePlayer extends ctf.Player {
         else
             return null;
     }
+
     /**
      * This method is never called.
      * @return
