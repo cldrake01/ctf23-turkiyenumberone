@@ -56,14 +56,14 @@ public abstract class Player extends Actor {
                 }
                 if (getMoveLocationThread.isAlive()) {
                     getMoveLocationThread.interrupt();
-                    System.out.println("Player ran out of time: " + this);
+                 //   System.out.println("Player ran out of time: " + this);
                     CtfWorld.extra += " Time";
                 }
                 makeMove(!this.getGrid().isValid(loc) ? null : loc); // null = don't move
             }
         } catch (Exception e) {
             CtfWorld.extra += " Err";
-            System.err.println("Player " + this + " has generated a runtime exception");
+          //  System.err.println("Player " + this + " has generated a runtime exception");
             e.printStackTrace();
         }
     }
@@ -104,11 +104,11 @@ public abstract class Player extends Actor {
         // Player is too close to own flag and not moving away from it, it must bounce
         if (team.onSide(getLocation()) && getGrid().get(team.getFlag().getLocation()) instanceof Flag && team.nearFlag(getLocation()) && team.nearFlag(loc)) {
             loc = bounce();
-            CtfWorld.extra += " Bounce";
+            //CtfWorld.extra += " Bounce";
         }
         // if Player is on own side and flag isn't being carried, it can't move too close to own flag
         if (team.onSide(getLocation()) && getGrid().get(team.getFlag().getLocation()) instanceof Flag && team.nearFlag(loc)) {
-            CtfWorld.extra += " Close to flag";
+           // CtfWorld.extra += " Close to flag";
             loc = bounce();
         }
         // move to loc and score appropriate points
@@ -199,7 +199,7 @@ public abstract class Player extends Actor {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.endsWith("CtfWorld")) super.removeSelfFromGrid();
         else {
-            System.err.println("Someone has cheated and tried to remove a player from the grid");
+            //System.err.println("Someone has cheated and tried to remove a player from the grid");
             CtfWorld.extra += " Cheat";
         }
     }
@@ -233,7 +233,7 @@ public abstract class Player extends Actor {
         if (callingClass.endsWith("Player")) super.moveTo(loc);
         else {
             CtfWorld.extra += " Cheat";
-            System.out.println("This Player has attempted an unauthorized moveTo");
+            //System.out.println("This Player has attempted an unauthorized moveTo");
         }
     }
     public String toString() {

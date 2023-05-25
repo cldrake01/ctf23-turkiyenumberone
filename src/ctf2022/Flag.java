@@ -37,8 +37,8 @@ public class Flag extends Actor {
         String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
         if (callingClass.endsWith("CtfWorld")) super.removeSelfFromGrid();
         else {
-            System.err.println("Someone has cheated and tried to remove a player from the grid");
-            CtfWorld.extra += " Cheat";
+            //System.err.println("Someone has cheated and tried to remove a player from the grid");
+            //CtfWorld.extra += " Cheat";
         }
     }
     /**
