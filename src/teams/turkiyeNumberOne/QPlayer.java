@@ -1,27 +1,36 @@
 package teams.turkiyeNumberOne;
-
 import info.gridworld.actor.Rock;
 import info.gridworld.grid.Location;
-
+import java.util.ArrayList;
+import java.util.Random;
 public class QPlayer extends BasePlayer {
-
     public QPlayer(Location startLocation) {
         super(startLocation);
     }
-
     @Override
     public Location getMoveLocation() {
         if (getMyTeam().getFlag().beingCarried()) {
-            Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()));
+            Location flagLocation = getMyTeam().getFlag().getLocation();
+            Location towardsFlag = getLocation().getAdjacentLocation(getLocation().getDirectionToward(flagLocation));
 
-            int size = getGrid().getEmptyAdjacentLocations(adjacentLocation).size();
+            ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(towardsFlag);
+            int numEmptyLocations = emptyAdjacentLocations.size();
 
-            if (getGrid().get(adjacentLocation) instanceof Rock && size > 0)
-                return getGrid().getEmptyAdjacentLocations(adjacentLocation).get((int) (Math.random() * size));
+            if (getGrid().get(towardsFlag) instanceof Rock && numEmptyLocations > 0) {
+                Random random = new Random();
+                int randomIndex = random.nextInt(numEmptyLocations);
+                return emptyAdjacentLocations.get(randomIndex);
+            }
         }
-
-        return intruderSearch() != null ?
-                intruderSearch() :
-                getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+        Location intruderLocation = intruderSearch();
+        if (intruderLocation != null) {
+            return intruderLocation;
+        } else {
+            ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(getLocation());
+            int numEmptyLocations = emptyAdjacentLocations.size();
+            Random random = new Random();
+            int randomIndex = random.nextInt(numEmptyLocations);
+            return emptyAdjacentLocations.get(randomIndex);
+        }
     }
 }
