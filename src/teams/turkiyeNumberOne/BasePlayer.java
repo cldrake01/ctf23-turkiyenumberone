@@ -1,13 +1,10 @@
 package teams.turkiyeNumberOne;
-
 import ctf.CTFWorld;
 import ctf.Flag;
 import ctf.Player;
 import info.gridworld.actor.Rock;
 import info.gridworld.grid.Location;
-
 import java.util.ArrayList;
-
 public class BasePlayer extends ctf.Player {
     Location lastLocation = null;
     /**
