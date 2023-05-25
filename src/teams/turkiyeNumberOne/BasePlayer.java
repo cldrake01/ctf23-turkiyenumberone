@@ -21,8 +21,12 @@ public class BasePlayer extends ctf.Player {
     public Location evade() {
         Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()));
         int size = getGrid().getEmptyAdjacentLocations(adjacentLocation).size();
-        if (getGrid().get(adjacentLocation) instanceof Rock && size > 0)
-            return getGrid().getEmptyAdjacentLocations(adjacentLocation).get((int) (Math.random() * size));
+        if (getGrid().get(adjacentLocation) instanceof Rock && size > 0) {
+            Location emptyLocation = getGrid().getEmptyAdjacentLocations(adjacentLocation).get((int) (Math.random() * size));
+            return getGrid().getEmptyAdjacentLocations(getLocation()).contains(emptyLocation)
+                    ? emptyLocation
+                    : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
+        }
         for (Location loc : getGrid().getOccupiedAdjacentLocations(adjacentLocation))
             if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam())) {
                 boolean isHigherOnGrid = loc.getRow() <= getLocation().getRow();
