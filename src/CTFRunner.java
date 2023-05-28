@@ -14,7 +14,7 @@ public class CTFRunner {
 //        }));
         // create two teams
         Team a = new TurkiyeNumberOne();
-        Team b = new BlueSampleTeam();
+        Team b = new TurkiyeNumberOne();
         // build and display a CTFWorld
         // use numClumps = 10 for testing
         // competition will set num clumps to 75
