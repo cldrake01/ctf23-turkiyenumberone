@@ -18,7 +18,6 @@ package info.gridworld.gui;
 
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -60,6 +59,13 @@ import javax.swing.event.DocumentListener;
  */
 public class MenuMaker<T>
 {
+    private final WorldFrame<T> parent;
+    private final DisplayMap displayMap;
+    private final ResourceBundle resources;
+    private T occupant;
+    private Grid currentGrid;
+    private Location currentLocation;
+
     /**
      * Constructs a menu maker for a given world.
      * @param parent the frame in which the world is displayed
@@ -122,7 +128,7 @@ public class MenuMaker<T>
             else
                 menu.addSeparator();
             Class cl = iter.next();
-            Constructor[] cons = (Constructor[]) cl.getConstructors();
+            Constructor[] cons = cl.getConstructors();
             for (int i = 0; i < cons.length; i++)
             {
                 menu.add(new OccupantConstructorItem(cons[i]));
@@ -234,7 +240,7 @@ public class MenuMaker<T>
         public Object makeDefaultValue(Class type)
         {
             if (type == int.class)
-                return new Integer(0);
+                return Integer.valueOf(0);
             else if (type == boolean.class)
                 return Boolean.FALSE;
             else if (type == double.class)
@@ -263,6 +269,8 @@ public class MenuMaker<T>
 
     private abstract class ConstructorItem extends MCItem
     {
+        private final Constructor c;
+
         public ConstructorItem(Constructor c)
         {
             setText(getDisplayString(null, c.getDeclaringClass().getName(), c
@@ -304,8 +312,6 @@ public class MenuMaker<T>
                 return null;
             }
         }
-
-        private Constructor c;
     }
 
     private class OccupantConstructorItem extends ConstructorItem implements
@@ -340,13 +346,15 @@ public class MenuMaker<T>
         @SuppressWarnings("unchecked")
         public void actionPerformed(ActionEvent event)
         {
-            Grid<T> newGrid = (Grid<T>) invokeConstructor(); 
+            Grid<T> newGrid = (Grid<T>) invokeConstructor();
             parent.setGrid(newGrid);
         }
     }
 
     private class MethodItem extends MCItem implements ActionListener
     {
+        private final Method m;
+
         public MethodItem(Method m)
         {
             setText(getDisplayString(m.getReturnType(), m.getName(), m
@@ -410,20 +418,24 @@ public class MenuMaker<T>
                 parent.new GUIExceptionHandler().handle(ex);
             }
         }
-
-        private Method m;
     }
-
-    private T occupant;
-    private Grid currentGrid;
-    private Location currentLocation;
-    private WorldFrame<T> parent;
-    private DisplayMap displayMap;
-    private ResourceBundle resources;
 }
 
 class PropertySheet extends JPanel
 {
+    private static final Map<Class, PropertyEditor> defaultEditors;
+
+    static
+    {
+        defaultEditors = new HashMap<Class, PropertyEditor>();
+        defaultEditors.put(String.class, new StringEditor());
+        defaultEditors.put(Location.class, new LocationEditor());
+        defaultEditors.put(Color.class, new ColorEditor());
+    }
+
+    private final PropertyEditor[] editors;
+    private final Object[] values;
+
     /**
      * Constructs a property sheet that shows the editable properties of a given
      * object.
@@ -547,11 +559,6 @@ class PropertySheet extends JPanel
         return values;
     }
 
-    private PropertyEditor[] editors;
-    private Object[] values;
-
-    private static Map<Class, PropertyEditor> defaultEditors;
-
     // workaround for Web Start bug
     public static class StringEditor extends PropertyEditorSupport
     {
@@ -564,13 +571,5 @@ class PropertySheet extends JPanel
         {
             setValue(s);
         }
-    }
-
-    static
-    {
-        defaultEditors = new HashMap<Class, PropertyEditor>();
-        defaultEditors.put(String.class, new StringEditor());
-        defaultEditors.put(Location.class, new LocationEditor());
-        defaultEditors.put(Color.class, new ColorEditor());
     }
 }

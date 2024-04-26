@@ -1,23 +1,35 @@
 package teams.turkiyeNumberOne;
-import ctf.Player;
+
+import ctf.Flag;
 import info.gridworld.grid.Location;
+import java.util.Optional;
+
 public class CPlayer extends BasePlayer {
-    public CPlayer(Location startLocation) {
-        super(startLocation);
-    }
-    @Override
-    public Location getMoveLocation() {
-        Location home = new Location(getLocation().getRow(), getMyTeam().getFlag().getLocation().getCol());
-        if (intruderSearch() != null)
-            return intruderSearch();
-        else if (getOtherTeam().getFlag().beingCarried())
-            return evade() != null ? evade() : home;
-        else if (searchSurroundings() != null)
-            return searchSurroundings();
-        else if (juke(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation()))) != null)
-            return juke(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation())));
-        else {
-            return newBounce() != null ? newBounce() : getOtherTeam().getFlag().getLocation();
-        }
-    }
+  public CPlayer(Location startLocation) {
+    super(startLocation);
+  }
+
+  @Override
+  public Location getMoveLocation() {
+    return priority();
+  }
+
+  Location priority() {
+    Location location = getLocation();
+    Location home = new Location(location.getRow(), getMyTeam().getFlag().getLocation().getCol());
+    Optional<Location> intruders = intruderSearch();
+    Optional<Location> evade = evade();
+    Optional<Location> surroundings = searchSurroundings();
+    Optional<Location> juked =
+        juke(
+            location.getAdjacentLocation(
+                location.getDirectionToward(getOtherTeam().getFlag().getLocation())));
+    Optional<Location> newBounce = newBounce();
+    Flag otherFlag = getOtherTeam().getFlag();
+
+    if (newBounce.isPresent()) return newBounce.get();
+    else if (intruders.isPresent()) return intruders.get();
+    else if (otherFlag.beingCarried()) return evade.orElse(home);
+    else return surroundings.orElse(juked.orElse(otherFlag.getLocation()));
+  }
 }

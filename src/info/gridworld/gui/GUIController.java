@@ -20,11 +20,8 @@ package info.gridworld.gui;
 
 import info.gridworld.grid.*;
 import info.gridworld.world.World;
-
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Modifier;
@@ -32,9 +29,6 @@ import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.*;
 
 /**
@@ -51,16 +45,16 @@ public class GUIController<T>
     private static final int MIN_DELAY_MSECS = 1, MAX_DELAY_MSECS = 1000;
     private static final int INITIAL_DELAY = MIN_DELAY_MSECS;
 
-    private Timer timer;
+    private final Timer timer;
+    private final GridPanel display;
+    private final WorldFrame<T> parentFrame;
+    private final ResourceBundle resources;
+    private final DisplayMap displayMap;
+    private final Set<Class> occupantClasses;
     private JButton stepButton, runButton, stopButton;
     private JComponent controlPanel;
-    private GridPanel display;
-    private WorldFrame<T> parentFrame;
     private int numStepsToRun, numStepsSoFar;
-    private ResourceBundle resources;
-    private DisplayMap displayMap;
     private boolean running;
-    private Set<Class> occupantClasses;
 
     /**
      * Creates a new controller tied to the specified display and gui
@@ -79,7 +73,7 @@ public class GUIController<T>
         this.displayMap = displayMap;
         makeControls();
 
-        occupantClasses = new TreeSet<Class>(new Comparator<Class>()
+        occupantClasses = new TreeSet<>(new Comparator<>()
         {
             public int compare(Class a, Class b)
             {
@@ -101,13 +95,7 @@ public class GUIController<T>
                 ex.printStackTrace();
             }
 
-        timer = new Timer(INITIAL_DELAY, new ActionListener()
-        {
-            public void actionPerformed(ActionEvent evt)
-            {
-                step();
-            }
-        });
+        timer = new Timer(INITIAL_DELAY, evt -> step());
 
         display.addMouseListener(new MouseAdapter()
         {
@@ -142,7 +130,7 @@ public class GUIController<T>
 
     private void addOccupant(T occupant)
     {
-        Class cl = occupant.getClass();
+        Class<?> cl = occupant.getClass();
         do
         {
             if ((cl.getModifiers() & Modifier.ABSTRACT) == 0)
@@ -239,34 +227,10 @@ public class GUIController<T>
         controlPanel.add(new JLabel(resources.getString("slider.gui.fast")));
         controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
-        stepButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                step();
-            }
-        });
-        runButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                run();
-            }
-        });
-        stopButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                stop();
-            }
-        });
-        speedSlider.addChangeListener(new ChangeListener()
-        {
-            public void stateChanged(ChangeEvent evt)
-            {
-                timer.setDelay(((JSlider) evt.getSource()).getValue());
-            }
-        });
+        stepButton.addActionListener(e -> step());
+        runButton.addActionListener(e -> run());
+        stopButton.addActionListener(e -> stop());
+        speedSlider.addChangeListener(evt -> timer.setDelay(((JSlider) evt.getSource()).getValue()));
     }
 
     /**
@@ -302,23 +266,20 @@ public class GUIController<T>
         if (loc != null)
         {
             T occupant = world.getGrid().get(loc);
+            MenuMaker<T> maker = new MenuMaker<T>(parentFrame, resources,
+                    displayMap);
+            JPopupMenu popup;
             if (occupant == null)
             {
-                MenuMaker<T> maker = new MenuMaker<T>(parentFrame, resources,
-                        displayMap);
-                JPopupMenu popup = maker.makeConstructorMenu(occupantClasses,
+                popup = maker.makeConstructorMenu(occupantClasses,
                         loc);
-                Point p = display.pointForLocation(loc);
-                popup.show(display, p.x, p.y);
             }
             else
             {
-                MenuMaker<T> maker = new MenuMaker<T>(parentFrame, resources,
-                        displayMap);
-                JPopupMenu popup = maker.makeMethodMenu(occupant, loc);
-                Point p = display.pointForLocation(loc);
-                popup.show(display, p.x, p.y);
+                popup = maker.makeMethodMenu(occupant, loc);
             }
+            Point p = display.pointForLocation(loc);
+            popup.show(display, p.x, p.y);
         }
         parentFrame.repaint();
     }

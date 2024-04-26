@@ -2,212 +2,241 @@ package teams.turkiyeNumberOne;
 
 import ctf.Flag;
 import ctf.Player;
+import ctf.Team;
+import info.gridworld.actor.Actor;
 import info.gridworld.actor.Rock;
+import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
-
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
-public class BasePlayer extends ctf.Player {
+public abstract class BasePlayer extends ctf.Player {
 
-    /**
-     * Constructs a new Player with its desired starting Location
-     *
-     * @param startLocation the desired starting Location
-     */
-    public BasePlayer(Location startLocation) {
-        super(startLocation);
+  /**
+   * Constructs a new Player with its desired starting Location
+   *
+   * @param startLocation the desired starting Location
+   */
+  public BasePlayer(Location startLocation) {
+    super(startLocation);
+  }
+
+  abstract Location priority();
+
+  /**
+   * Attempts to evade other players by moving in the opposite direction of the enemy flag.
+   *
+   * @return The location of the player after the evasion, or null if there are no adjacent enemy
+   *     players or if the player does not have the flag.
+   */
+  Optional<Location> evade() {
+    Grid<Actor> grid = getGrid();
+    Location location = getLocation();
+    Location adjacent = getAdjacentLocation(myFlag());
+    List<Location> empty = grid.getEmptyAdjacentLocations(adjacent);
+
+    if (isRock(adjacent) && !empty.isEmpty()) {
+      Optional<Location> emptyLocation = getRandomEmptyAdjacentLocation(adjacent);
+      if (empty.contains(emptyLocation.orElse(null))) return emptyLocation;
+      return getRandomEmptyAdjacentLocation(location);
     }
+    List<Location> enemies =
+        grid.getOccupiedAdjacentLocations(adjacent).stream().filter(this::isEnemy).toList();
+    for (Location enemy : enemies) juke(enemy);
+    return Optional.empty();
+  }
 
-    /**
-     * Attempts to evade other players by moving in the opposite direction of the enemy flag.
-     *
-     * @return The location of the player after the evasion, or null if there are no adjacent enemy players or
-     * if the player does not have the flag.
-     */
-    public Location evade() {
-        Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()));
-        int size = getGrid().getEmptyAdjacentLocations(adjacentLocation).size();
-        if (getGrid().get(adjacentLocation) instanceof Rock && size > 0) {
-            Location emptyLocation = getGrid().getEmptyAdjacentLocations(adjacentLocation).get((int) (Math.random() * size));
-            return getGrid().getEmptyAdjacentLocations(getLocation()).contains(emptyLocation)
-                    ? emptyLocation
-                    : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-        }
-        for (Location loc : getGrid().getOccupiedAdjacentLocations(adjacentLocation))
-            if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam())) {
-                juke(loc);
-            }
-        return null;
-    }
+  Location myFlag() {
+    return getMyTeam().getFlag().getLocation();
+  }
 
-    public Location juke(Location loc) {
-        if (getGrid().get(loc) instanceof Player) {
-            return loc.getRow() >= getLocation().getRow()
-                    ? getLocation().getAdjacentLocation(Location.NORTH)
-                    : getLocation().getAdjacentLocation(Location.SOUTH);
-//            switch (getLocation().getDirectionToward(loc)) {
-//                case Location.NORTH -> {
-//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTH))
-//                            ? getLocation().getAdjacentLocation(Location.SOUTH)
-//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-//                }
-//                case Location.NORTHEAST -> {
-//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTHWEST))
-//                            ? getLocation().getAdjacentLocation(Location.SOUTHWEST)
-//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-//                }
-//                case Location.NORTHWEST -> {
-//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.SOUTHEAST))
-//                            ? getLocation().getAdjacentLocation(Location.SOUTHEAST)
-//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-//                }
-//                case Location.SOUTH -> {
-//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTH))
-//                            ? getLocation().getAdjacentLocation(Location.NORTH)
-//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-//                }
-//                case Location.SOUTHEAST -> {
-//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTHWEST))
-//                            ? getLocation().getAdjacentLocation(Location.NORTHWEST)
-//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-//                }
-//                case Location.SOUTHWEST -> {
-//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.NORTHEAST))
-//                            ? getLocation().getAdjacentLocation(Location.NORTHEAST)
-//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-//                }
-//                case Location.EAST -> {
-//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.WEST))
-//                            ? getLocation().getAdjacentLocation(Location.WEST)
-//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-//                }
-//                case Location.WEST -> {
-//                    return getGrid().getEmptyAdjacentLocations(getLocation()).contains(getLocation().getAdjacentLocation(Location.EAST))
-//                            ? getLocation().getAdjacentLocation(Location.EAST)
-//                            : getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-//                }
-//                default -> {
-//                    return null;
-//                }
-//            }
-        } else {
-            return null;
-        }
-    }
+  Location otherFlag() {
+    return getOtherTeam().getFlag().getLocation();
+  }
 
-    /**
-     * Searches for enemy players on the grid and returns the location of the first enemy player found.
-     *
-     * @return The location of the first enemy player found, or null if there are no enemy players on the grid.
-     */
-    public Location intruderSearch() {
-        if (getMyTeam().onSide(getLocation())) {
-            // Search for enemy players on the grid
-            ArrayList<Location> occupiedLocations = getGrid().getOccupiedLocations();
-            for (Location loc : occupiedLocations) {
-                if (isEnemyPlayerOnGrid(loc)) {
-                    // Determine the objective location for the enemy player
-                    Location objectiveLocation = getObjectiveLocation(loc);
-                    if (objectiveLocation != null) {
-                        return objectiveLocation;
-                    }
-                }
-            }
-        }
-        return null;
-    }
+  boolean isPlayer(Location loc) {
+    return getGrid().get(loc) instanceof Player;
+  }
 
-    /**
-     * Checks if the given location contains an enemy player based on certain conditions.
-     *
-     * @param loc The location to check
-     * @return True if the location contains an enemy player, false otherwise.
-     */
-    private boolean isEnemyPlayerOnGrid(Location loc) {
-        return getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam().equals(getOtherTeam()) && !getOtherTeam().onSide(loc);
-    }
+  boolean isEnemy(Location loc) {
+    Grid<Actor> grid = getGrid();
+    return (isPlayer(loc) && (((Player) grid.get(loc)).getTeam().equals(getOtherTeam())));
+  }
 
-    /**
-     * Determines the objective location based on the enemy player's location.
-     *
-     * @param loc The location of the enemy player
-     * @return The objective location, which could be an empty adjacent location or the enemy player's location itself.
-     */
-    private Location getObjectiveLocation(Location loc) {
-        Location adjacentLocation = getLocation().getAdjacentLocation(getLocation().getDirectionToward(loc));
-        ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(getLocation());
-        if (getGrid().get(adjacentLocation) instanceof Rock && !emptyAdjacentLocations.isEmpty()) {
-            // Randomly select an empty adjacent location
-            int randomIndex = (int) (Math.random() * emptyAdjacentLocations.size());
-            return emptyAdjacentLocations.get(randomIndex);
-        } else {
-            // Return the enemy player's location
-            return loc;
-        }
-    }
+  boolean isRock(Location loc) {
+    return getGrid().get(loc) instanceof Rock;
+  }
 
-    /**
-     * Returns the objective location of the player based on the given location.
-     *
-     * @param loc The location of the player.
-     * @return The objective location of the player, or null if the location is not a valid objective location.
-     */
-    public Location getImmediateObjectiveLocation(Location loc) {
-        if (getGrid().get(loc) instanceof Player && ((Player) getGrid().get(loc)).getTeam() != this.getTeam() && !getOtherTeam().onSide(loc))
-            return loc;
-        else if (getGrid().get(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getOtherTeam().getFlag().getLocation()))) instanceof Rock && getGrid().getEmptyAdjacentLocations(getLocation()).size() > 0)
-            return getGrid().getEmptyAdjacentLocations(getLocation()).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(getLocation()).size()));
-        else if (getGrid().get(loc) instanceof Flag && ((Flag) getGrid().get(loc)).getTeam() != this.getTeam())
-            return loc;
-        else
-            return null; // the reason we return null is to allow for several iterations of this method to be called in a row.
-    }
+  boolean isFlag(Location loc) {
+    return getGrid().get(loc) instanceof Flag;
+  }
 
-    /**
-     * Searches for the immediate objective location in the surrounding locations of the current location.
-     *
-     * @return the immediate objective location if found, otherwise null.
-     * The reason for returning null is to allow for class-specific behavior, which may follow a call to this method.
-     */
-    public Location searchSurroundings() {
-        for (Location loc : getGrid().getOccupiedAdjacentLocations(getLocation()))
-            if (getImmediateObjectiveLocation(loc) != null) return getImmediateObjectiveLocation(loc);
-        return null;
-    }
+  boolean isOffsides(Location loc) {
+    return !isEnemy(loc) && !getMyTeam().onSide(loc);
+  }
 
-    /**
-     * Bounces the player in the opposite direction of the flag if the player is within a certain distance of the flag.
-     *
-     * @return a location in the opposite direction of the flag.
-     */
-    public Location newBounce() {
-        Location northAdjacentLocation = getLocation().getAdjacentLocation(Location.NORTH);
-        Location southAdjacentLocation = getLocation().getAdjacentLocation(Location.SOUTH);
-        if (getMyTeam().nearFlag(getLocation().getAdjacentLocation(getLocation().getDirectionToward(getMyTeam().getFlag().getLocation()))))
-            return (getMyTeam().getFlag().getLocation().getRow() >= getLocation().getRow())
-                    ?
-                    (
-                            getGrid().get(northAdjacentLocation) instanceof Rock
-                                    ? getGrid().getEmptyAdjacentLocations(northAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(northAdjacentLocation).size()))
-                                    : northAdjacentLocation
-                    )
-                    :
-                    (
-                            getGrid().get(southAdjacentLocation) instanceof Rock
-                                    ? getGrid().getEmptyAdjacentLocations(southAdjacentLocation).get((int) (Math.random() * getGrid().getEmptyAdjacentLocations(southAdjacentLocation).size()))
-                                    : southAdjacentLocation
-                    );
-        else
-            return null;
-    }
+  boolean enemyIsOffsides(Location loc) {
+    return isEnemy(loc) && !getOtherTeam().onSide(loc);
+  }
 
-    /**
-     * This method is never called.
-     *
-     * @return
-     */
-    @Override
-    public Location getMoveLocation() {
-        return null;
+  Optional<Location> juke(Location loc) {
+    Location location = getLocation();
+    Location north = location.getAdjacentLocation(Location.NORTH);
+    Location south = location.getAdjacentLocation(Location.SOUTH);
+
+    if (isPlayer(loc))
+      return loc.getRow() >= location.getRow() ? Optional.of(north) : Optional.of(south);
+    else return Optional.empty();
+  }
+
+  /**
+   * Searches for enemy players on the grid and returns the location of the first enemy player
+   * found.
+   *
+   * @return The location of the first enemy player found, or null if there are no enemy players on
+   *     the grid.
+   */
+  Optional<Location> intruderSearch() {
+    List<Location> occupiedLocations =
+        getGrid().getOccupiedLocations().stream()
+            .filter(this::isEnemy)
+            .filter(this::enemyIsOffsides)
+            .toList();
+    if (occupiedLocations.isEmpty()) return Optional.empty();
+    Location closestEnemy = minDistance(getLocation(), occupiedLocations);
+
+    if (!isOffsides(getLocation())) return aroundRock(closestEnemy);
+    return Optional.empty();
+  }
+
+  //  /**
+  //   * Determines the objective location based on the enemy player's location.
+  //   *
+  //   * @param loc The location of the enemy player
+  //   * @return The objective location, which could be an empty adjacent location or the enemy
+  // player's
+  //   *     location itself.
+  //   */
+  //  private Optional<Location> getNearestEnemy(Location loc) {
+  //    Location location = getLocation();
+  //    Location adjacentLocation = getAdjacentLocation(loc);
+  //    ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(location);
+  //
+  //    if (isRock(adjacentLocation) && !emptyAdjacentLocations.isEmpty())
+  //      return getRandomEmptyAdjacentLocation(location);
+  //    return Optional.of(minDistance(loc));
+  //  }
+
+  Location minDistance(Location target, List<Location> locations) {
+    double minDistance = Double.MAX_VALUE;
+    Location minLocation = null;
+
+    for (Location loc : locations) {
+      double distance =
+          Math.sqrt(
+              Math.pow(loc.getRow() - target.getRow(), 2)
+                  + Math.pow(loc.getCol() - target.getCol(), 2));
+      if (distance < minDistance) {
+        minDistance = distance;
+        minLocation = loc;
+      }
     }
+    return minLocation;
+  }
+
+  /**
+   * Returns the objective location of the player based on the given location.
+   *
+   * @param loc The location of the player.
+   * @return The objective location of the player, or null if the location is not a valid objective
+   *     location.
+   */
+  Optional<Location> getImmediateObjectiveLocation(Location loc) {
+    Grid<Actor> grid = getGrid();
+    Location location = getLocation();
+
+    if (isEnemy(loc) && enemyIsOffsides(loc)) return Optional.of(loc);
+    else if (isRock(getAdjacentLocation(otherFlag()))
+        && !grid.getEmptyAdjacentLocations(location).isEmpty())
+      return getRandomEmptyAdjacentLocation(location);
+    else if (isFlag(loc) && ((Flag) grid.get(loc)).getTeam() != this.getTeam())
+      return Optional.of(loc);
+    else return Optional.empty();
+  }
+
+  /**
+   * Searches for the immediate objective location in the surrounding locations of the current
+   * location.
+   *
+   * @return the immediate objective location if found, otherwise null. The reason for returning
+   *     null is to allow for class-specific behavior, which may follow a call to this method.
+   */
+  Optional<Location> searchSurroundings() {
+    return getGrid().getOccupiedAdjacentLocations(getLocation()).stream()
+        .map(this::getImmediateObjectiveLocation)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .findFirst();
+  }
+
+  Optional<Location> aroundRock(Location target) {
+    Location adjacentLocation = getAdjacentLocation(target);
+
+    return !isRock(adjacentLocation)
+        ? Optional.of(adjacentLocation)
+        : getRandomEmptyAdjacentLocation(getLocation());
+  }
+
+  /**
+   * Bounces the player in the opposite direction of the flag if the player is within a certain
+   * distance of the flag.
+   *
+   * @return a location in the opposite direction of the flag.
+   */
+  Optional<Location> newBounce() {
+    Location location = getLocation();
+    Location northAdjacentLocation = location.getAdjacentLocation(Location.NORTH);
+    Location southAdjacentLocation = location.getAdjacentLocation(Location.SOUTH);
+    Team myTeam = getMyTeam();
+
+    if (!myTeam.nearFlag(getAdjacentLocation(myTeam.getFlag().getLocation())))
+      return Optional.empty();
+
+    return switch (myTeam.getFlag().getLocation().getRow() >= location.getRow() ? 1 : 0) {
+      case 1 ->
+          (isRock(northAdjacentLocation))
+              ? getRandomEmptyAdjacentLocation(northAdjacentLocation)
+              : Optional.of(northAdjacentLocation);
+      case 0 ->
+          (isRock(southAdjacentLocation))
+              ? getRandomEmptyAdjacentLocation(southAdjacentLocation)
+              : Optional.of(southAdjacentLocation);
+      default -> Optional.empty();
+    };
+  }
+
+  Location getAdjacentLocation(Location location) {
+    return getLocation().getAdjacentLocation(getLocation().getDirectionToward(location));
+  }
+
+  Optional<Location> getRandomEmptyAdjacentLocation(Location location) {
+    ArrayList<Location> emptyAdjacentLocations = getGrid().getEmptyAdjacentLocations(location);
+    int numEmptyLocations = emptyAdjacentLocations.size();
+    Random random = new Random();
+    int randomIndex = random.nextInt(numEmptyLocations);
+    return Optional.of(emptyAdjacentLocations.get(randomIndex));
+  }
+
+  /**
+   * This method is never called.
+   *
+   * @return null
+   */
+  @Override
+  public Location getMoveLocation() {
+    System.err.println("This method should never be called.");
+    return null;
+  }
 }
